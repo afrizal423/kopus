@@ -60,6 +60,12 @@ class Voting_model extends CI_Model {
 
         $this->db->trans_start();
 
+        $status_check = $this->db->query("SELECT setting_value FROM election_settings WHERE setting_key = 'election_status' LIMIT 1")->row_array();
+        if (empty($status_check['setting_value']) || $status_check['setting_value'] !== 'open') {
+            $this->db->trans_rollback();
+            return false;
+        }
+
         $this->db->query(
             "UPDATE voters SET has_voted = 1, voted_at = ? WHERE id = ? AND has_voted = 0 AND status = 'active'",
             array($now, (int)$voter_id)
@@ -164,6 +170,9 @@ class Voting_model extends CI_Model {
     private function get_ledger_secret() {
         $q = $this->db->query("SELECT setting_value FROM election_settings WHERE setting_key = 'ledger_secret_salt' LIMIT 1");
         $row = $q->row_array();
-        return (!empty($row['setting_value'])) ? $row['setting_value'] : 'koperasi_static_fallback_salt_2026';
+        if (empty($row['setting_value'])) {
+            throw new \RuntimeException('Ledger secret salt tidak ditemukan pada database.');
+        }
+        return $row['setting_value'];
     }
 }

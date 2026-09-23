@@ -40,6 +40,12 @@ class Admin extends CI_Controller {
             return;
         }
 
+        if ($this->check_login_rate_limit() >= 5) {
+            $this->session->set_flashdata('error', 'Terlalu banyak percobaan login gagal dari perangkat ini. Silakan tunggu 1 menit.');
+            redirect('admin/login');
+            return;
+        }
+
         $username = trim((string)$this->input->post('username', TRUE));
         $password = (string)$this->input->post('password');
 
@@ -61,9 +67,21 @@ class Admin extends CI_Controller {
             $this->Admin_model->log_audit('LOGIN', $admin['username'], 'Berhasil login ke sistem');
             redirect('admin');
         } else {
+            $this->Admin_model->log_audit('LOGIN_FAILED', !empty($username) ? $username : 'unknown', 'Percobaan login gagal dengan kredensial salah');
             $this->session->set_flashdata('error', 'Kombinasi username atau password salah.');
             redirect('admin/login');
         }
+    }
+
+    private function check_login_rate_limit() {
+        $ip = $this->input->ip_address();
+        $since = date('Y-m-d H:i:s', time() - 60);
+        $q = $this->db->query(
+            "SELECT COUNT(*) AS total FROM audit_logs WHERE event_type = 'LOGIN_FAILED' AND ip_address = ? AND created_at >= ?",
+            array($ip, $since)
+        );
+        $row = $q->row_array();
+        return (int)($row['total'] ?? 0);
     }
 
     public function logout() {
@@ -161,6 +179,12 @@ class Admin extends CI_Controller {
 
     public function candidate_toggle($id) {
         $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
         $this->Admin_model->toggle_candidate((int)$id);
         $this->Admin_model->log_audit('TOGGLE_CANDIDATE', $this->session->userdata('admin_username'), 'Mengubah status aktif calon #' . (int)$id);
         $this->session->set_flashdata('success', 'Status calon berhasil diubah.');
@@ -169,6 +193,12 @@ class Admin extends CI_Controller {
 
     public function candidate_delete($id) {
         $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
         $res = $this->Admin_model->delete_candidate((int)$id);
         if ($res['status']) {
             $this->Admin_model->log_audit('DELETE_CANDIDATE', $this->session->userdata('admin_username'), 'Menghapus calon ID #' . (int)$id);
@@ -225,6 +255,12 @@ class Admin extends CI_Controller {
 
     public function voter_toggle($id) {
         $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
         $status = $this->Admin_model->toggle_voter_status((int)$id);
         $this->Admin_model->log_audit('TOGGLE_VOTER', $this->session->userdata('admin_username'), 'Mengubah status pemilih ID #' . (int)$id . ' menjadi ' . $status);
         $this->session->set_flashdata('success', 'Status pemilih berhasil diubah menjadi ' . $status . '.');
@@ -233,6 +269,12 @@ class Admin extends CI_Controller {
 
     public function voter_reset($id) {
         $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
         $this->Admin_model->reset_voter_vote((int)$id, $this->session->userdata('admin_username'));
         $this->session->set_flashdata('success', 'Status pemilih telah direset (belum memilih). Aktivitas ini telah dicatat ke audit log.');
         redirect('admin/voters');

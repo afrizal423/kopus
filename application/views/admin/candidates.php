@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Calon - E-Voting Koperasi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="<?= base_url('assets/vendor/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome/css/all.min.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/koperasi.css'); ?>">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js'); ?>"></script>
 </head>
 <body>
 
@@ -72,14 +72,14 @@
 
                 <?php if ($this->session->flashdata('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show py-2 small" role="alert">
-                    <i class="fas fa-check-circle me-1"></i> <?= $this->session->flashdata('success'); ?>
+                    <i class="fas fa-check-circle me-1"></i> <?= htmlspecialchars($this->session->flashdata('success'), ENT_QUOTES, 'UTF-8'); ?>
                     <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
                 </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show py-2 small" role="alert">
-                    <i class="fas fa-exclamation-circle me-1"></i> <?= $this->session->flashdata('error'); ?>
+                    <i class="fas fa-exclamation-circle me-1"></i> <?= htmlspecialchars($this->session->flashdata('error'), ENT_QUOTES, 'UTF-8'); ?>
                     <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
                 </div>
                 <?php endif; ?>
@@ -137,9 +137,12 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="<?= base_url('admin/candidate_toggle/' . $c['id']); ?>" class="badge <?= ($c['is_active'] == 1) ? 'bg-success' : 'bg-secondary'; ?> text-decoration-none" title="Klik untuk mengubah status aktif">
-                                            <?= ($c['is_active'] == 1) ? 'Aktif' : 'Nonaktif'; ?>
-                                        </a>
+                                        <form action="<?= base_url('admin/candidate_toggle/' . $c['id']); ?>" method="POST" class="d-inline">
+                                            <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                                            <button type="submit" class="badge <?= ($c['is_active'] == 1) ? 'bg-success' : 'bg-secondary'; ?> border-0" title="Klik untuk mengubah status aktif" style="cursor: pointer;">
+                                                <?= ($c['is_active'] == 1) ? 'Aktif' : 'Nonaktif'; ?>
+                                            </button>
+                                        </form>
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm">
@@ -294,6 +297,10 @@
         </div>
     </div>
 
+    <form id="actionPostForm" method="POST" style="display:none;">
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+    </form>
+
     <script>
     $(document).ready(function() {
         const modalEdit = new bootstrap.Modal(document.getElementById('modalEditCandidate'));
@@ -318,11 +325,11 @@
 
         $('.btn-delete-candidate').on('click', function() {
             const id = $(this).data('id');
-            const name = $(this).data('name');
+            const name = String($(this).data('name') || '');
 
             Swal.fire({
                 title: 'Hapus Calon?',
-                text: `Apakah Anda yakin ingin menghapus "${name}" dari daftar calon?`,
+                text: 'Apakah Anda yakin ingin menghapus "' + name + '" dari daftar calon?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -331,7 +338,9 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '<?= base_url("admin/candidate_delete/"); ?>' + id;
+                    const $form = $('#actionPostForm');
+                    $form.attr('action', '<?= base_url("admin/candidate_delete/"); ?>' + id);
+                    $form.submit();
                 }
             });
         });

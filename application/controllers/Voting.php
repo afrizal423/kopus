@@ -157,6 +157,18 @@ class Voting extends CI_Controller {
 
         $entry_time = $this->session->userdata('booth_entry_time');
         $settings = $this->Voting_model->get_election_status();
+
+        if (empty($settings['election_status']) || $settings['election_status'] !== 'open') {
+            $this->session->sess_destroy();
+            return $this->output
+                ->set_status_header(403)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array(
+                    'status' => 'error', 
+                    'message' => 'Pemilihan sedang tidak aktif atau telah ditutup.'
+                )));
+        }
+
         $timeout = (int)$settings['booth_timeout_seconds'];
 
         // Enforce session timeout on submission to reject abandoned booth submissions.

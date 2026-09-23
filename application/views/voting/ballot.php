@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surat Suara Digital - E-Voting Koperasi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="<?= base_url('assets/vendor/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome/css/all.min.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/koperasi.css'); ?>">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js'); ?>"></script>
     <style>
         body { padding-bottom: 120px; }
     </style>
@@ -231,15 +231,25 @@
             updateSummary();
         });
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function(s) {
+                return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[s];
+            });
+        }
+
         function updateSummary() {
+            const safeKetua = escapeHtml(selectedKetuaName);
+            const safePengawas = escapeHtml(selectedPengawasName);
+
             if (selectedKetua && selectedPengawas) {
-                $summary.html(`<span class="text-success"><i class="fas fa-check-circle"></i> Lengkap:</span> Ketua: <b>${selectedKetuaName}</b> & Pengawas: <b>${selectedPengawasName}</b>`);
+                $summary.html(`<span class="text-success"><i class="fas fa-check-circle"></i> Lengkap:</span> Ketua: <b>${safeKetua}</b> & Pengawas: <b>${safePengawas}</b>`);
                 $btnSubmit.prop('disabled', false);
             } else if (selectedKetua) {
-                $summary.html(`Ketua: <b>${selectedKetuaName}</b> | <span class="text-warning">Belum memilih Pengawas</span>`);
+                $summary.html(`Ketua: <b>${safeKetua}</b> | <span class="text-warning">Belum memilih Pengawas</span>`);
                 $btnSubmit.prop('disabled', true);
             } else if (selectedPengawas) {
-                $summary.html(`<span class="text-warning">Belum memilih Ketua</span> | Pengawas: <b>${selectedPengawasName}</b>`);
+                $summary.html(`<span class="text-warning">Belum memilih Ketua</span> | Pengawas: <b>${safePengawas}</b>`);
                 $btnSubmit.prop('disabled', true);
             } else {
                 $summary.text('Belum memilih calon');
@@ -277,12 +287,15 @@
                 return;
             }
 
+            const safeKetua = escapeHtml(selectedKetuaName);
+            const safePengawas = escapeHtml(selectedPengawasName);
+
             Swal.fire({
                 title: 'Konfirmasi Pilihan Anda',
                 html: `
                     <div class="text-start p-3 bg-light rounded-3 border small">
-                        <div class="mb-2"><strong>Calon Ketua:</strong><br><span class="text-success fw-bold fs-6">${selectedKetuaName}</span></div>
-                        <div><strong>Calon Pengawas:</strong><br><span class="text-primary fw-bold fs-6">${selectedPengawasName}</span></div>
+                        <div class="mb-2"><strong>Calon Ketua:</strong><br><span class="text-success fw-bold fs-6">${safeKetua}</span></div>
+                        <div><strong>Calon Pengawas:</strong><br><span class="text-primary fw-bold fs-6">${safePengawas}</span></div>
                     </div>
                     <p class="mt-3 mb-0 text-muted small">Pilihan yang telah dikirim bersifat final dan tidak dapat diubah kembali.</p>
                 `,

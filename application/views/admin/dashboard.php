@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Pengawas &amp; Panitia - E-Voting Koperasi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="<?= base_url('assets/vendor/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome/css/all.min.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/koperasi.css'); ?>">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js'); ?>"></script>
 </head>
 <body>
 
@@ -78,14 +78,14 @@
 
                 <?php if ($this->session->flashdata('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show py-2 small" role="alert">
-                    <i class="fas fa-check-circle me-1"></i> <?= $this->session->flashdata('success'); ?>
+                    <i class="fas fa-check-circle me-1"></i> <?= htmlspecialchars($this->session->flashdata('success'), ENT_QUOTES, 'UTF-8'); ?>
                     <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
                 </div>
                 <?php endif; ?>
 
                 <?php if ($this->session->flashdata('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show py-2 small" role="alert">
-                    <i class="fas fa-exclamation-circle me-1"></i> <?= $this->session->flashdata('error'); ?>
+                    <i class="fas fa-exclamation-circle me-1"></i> <?= htmlspecialchars($this->session->flashdata('error'), ENT_QUOTES, 'UTF-8'); ?>
                     <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
                 </div>
                 <?php endif; ?>
@@ -100,7 +100,7 @@
                             <div>
                                 <h6 class="fw-bold text-dark mb-0">Integritas Kriptografis Database (Anti-Tamper Ledger)</h6>
                                 <small class="text-muted" id="tamperStatusText">
-                                    <?= $integrity['message']; ?>
+                                    <?= htmlspecialchars($integrity['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                                 </small>
                             </div>
                         </div>
