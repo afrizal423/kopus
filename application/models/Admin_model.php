@@ -203,4 +203,19 @@ class Admin_model extends CI_Model {
             $this->db->query("INSERT INTO election_settings (setting_key, setting_value) VALUES (?, ?)", array($key, $value));
         }
     }
+
+    public function get_admin_by_id($id) {
+        $query = $this->db->query(
+            "SELECT id, username, password_hash, full_name, role FROM admin_users WHERE id = ? LIMIT 1",
+            array((int)$id)
+        );
+        return $query->row_array();
+    }
+
+    public function update_password($id, $new_hash) {
+        return $this->db->query(
+            "UPDATE admin_users SET password_hash = ? WHERE id = ?",
+            array($new_hash, (int)$id)
+        );
+    }
 }

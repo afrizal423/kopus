@@ -325,4 +325,83 @@ class Admin extends CI_Controller {
         $data['integrity'] = $this->Voting_model->verify_ledger_integrity();
         $this->load->view('admin/export_report', $data);
     }
+
+    public function change_password() {
+        $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
+
+        $admin_id = (int)$this->session->userdata('admin_id');
+        $current_password = (string)$this->input->post('current_password');
+        $new_password = (string)$this->input->post('new_password');
+        $confirm_password = (string)$this->input->post('confirm_password');
+        $redirect_to = $this->input->post('redirect_to', TRUE);
+        $safe_redirect = (!empty($redirect_to) && in_array($redirect_to, array('admin', 'admin/candidates', 'admin/voters'))) ? $redirect_to : 'admin';
+
+        if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+            $this->session->set_flashdata('error', 'Semua kolom password wajib diisi.');
+            redirect($safe_redirect);
+            return;
+        }
+
+        $admin = $this->Admin_model->get_admin_by_id($admin_id);
+        if (!$admin || !password_verify($current_password, $admin['password_hash'])) {
+            $this->session->set_flashdata('error', 'Password lama yang Anda masukkan tidak sesuai.');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if ($new_password !== $confirm_password) {
+            $this->session->set_flashdata('error', 'Konfirmasi password baru tidak cocok.');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if ($current_password === $new_password) {
+            $this->session->set_flashdata('error', 'Password baru tidak boleh sama dengan password lama saat ini.');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if (strlen($new_password) < 8) {
+            $this->session->set_flashdata('error', 'Password baru harus memiliki panjang minimal 8 karakter.');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if (!preg_match('/[A-Z]/', $new_password)) {
+            $this->session->set_flashdata('error', 'Password baru harus mengandung setidaknya satu huruf besar (A-Z).');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if (!preg_match('/[a-z]/', $new_password)) {
+            $this->session->set_flashdata('error', 'Password baru harus mengandung setidaknya satu huruf kecil (a-z).');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if (!preg_match('/[0-9]/', $new_password)) {
+            $this->session->set_flashdata('error', 'Password baru harus mengandung setidaknya satu angka (0-9).');
+            redirect($safe_redirect);
+            return;
+        }
+
+        if (!preg_match('/[^a-zA-Z0-9]/', $new_password)) {
+            $this->session->set_flashdata('error', 'Password baru harus mengandung setidaknya satu simbol atau karakter khusus (!@#$%^&* dll).');
+            redirect($safe_redirect);
+            return;
+        }
+
+        $new_hash = password_hash($new_password, PASSWORD_BCRYPT);
+        $this->Admin_model->update_password($admin_id, $new_hash);
+        $this->Admin_model->log_audit('CHANGE_PASSWORD', $admin['username'], 'Berhasil memperbarui kata sandi akun');
+
+        $this->session->set_flashdata('success', 'Kata sandi berhasil diperbarui. Silakan gunakan password baru ini pada sesi masuk berikutnya.');
+        redirect($safe_redirect);
+    }
 }

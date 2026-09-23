@@ -23,7 +23,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ---------------------------------------------------------------------
 CREATE TABLE `voters` (
   `id`            INT UNSIGNED     NOT NULL AUTO_INCREMENT,
-  `rfid_uid`      VARCHAR(64)      NOT NULL COMMENT 'UID kartu RFID (HID Keyboard Wedge)',
+  `rfid_uid`      VARCHAR(64)      NULL DEFAULT NULL COMMENT 'UID kartu RFID (HID Keyboard Wedge)',
   `name`          VARCHAR(120)     NOT NULL,
   `member_number` VARCHAR(40)      NOT NULL COMMENT 'Nomor anggota koperasi',
   `status`        ENUM('active','blocked') NOT NULL DEFAULT 'active',

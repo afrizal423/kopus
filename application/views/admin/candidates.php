@@ -51,9 +51,14 @@
                 <div class="border-top border-secondary pt-3 mt-auto px-2">
                     <div class="text-white small fw-semibold mb-1"><?= htmlspecialchars($this->session->userdata('admin_name')); ?></div>
                     <div class="text-muted small mb-2 text-capitalize">Peran: <?= htmlspecialchars($this->session->userdata('admin_role')); ?></div>
-                    <a href="<?= base_url('admin/logout'); ?>" class="text-danger p-0 d-inline-flex align-items-center gap-1">
-                        <i class="fas fa-sign-out-alt"></i> Keluar
-                    </a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-outline-light btn-sm py-0 px-2" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#modalChangePassword">
+                            <i class="fas fa-key me-1"></i> Ganti Password
+                        </button>
+                        <a href="<?= base_url('admin/logout'); ?>" class="text-danger p-0 d-inline-flex align-items-center gap-1 small">
+                            <i class="fas fa-sign-out-alt"></i> Keluar
+                        </a>
+                    </div>
                 </div>
             </nav>
 
@@ -65,9 +70,14 @@
                         <p class="text-muted small mb-0">Kelola daftar calon kandidat, nomor urut, foto profil, serta visi dan misi.</p>
                     </div>
 
-                    <button type="button" class="btn btn-kop-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddCandidate">
-                        <i class="fas fa-user-plus me-1"></i> Tambah Calon Baru
-                    </button>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalChangePassword">
+                            <i class="fas fa-key me-1"></i> Ganti Password
+                        </button>
+                        <button type="button" class="btn btn-kop-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddCandidate">
+                            <i class="fas fa-user-plus me-1"></i> Tambah Calon Baru
+                        </button>
+                    </div>
                 </div>
 
                 <?php if ($this->session->flashdata('success')): ?>
@@ -346,5 +356,6 @@
         });
     });
     </script>
+    <?php $this->load->view('admin/modal_change_password', array('current_page' => 'admin/candidates')); ?>
 </body>
 </html>
