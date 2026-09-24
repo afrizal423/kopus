@@ -40,7 +40,7 @@ class Admin extends CI_Controller {
             return;
         }
 
-        if ($this->check_login_rate_limit() >= 5) {
+        if ($this->check_login_rate_limit() >= 20) {
             $this->session->set_flashdata('error', 'Terlalu banyak percobaan login gagal dari perangkat ini. Silakan tunggu 1 menit.');
             redirect('admin/login');
             return;
