@@ -226,6 +226,46 @@ class Voting extends CI_Controller {
         redirect('voting');
     }
 
+    /**
+     * Development helper to preview ballot without physical RFID reader.
+     * Only accessible in non-production environments.
+     */
+    public function dev_booth() {
+        $client_ip = $this->input->ip_address();
+        $is_dev_host = in_array($client_ip, array('127.0.0.1', '::1'), true) 
+                    || (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
+                    || ENVIRONMENT !== 'production';
+
+        if (!$is_dev_host) {
+            show_404();
+            return;
+        }
+
+        // Pick the first active voter who has not voted
+        $voter = $this->db->query("SELECT id, name, member_number FROM voters WHERE has_voted = 0 AND status = 'active' ORDER BY id ASC LIMIT 1")->row_array();
+        if (!$voter) {
+            // If all have voted during testing, temporarily reset the first voter for testing
+            $voter = $this->db->query("SELECT id, name, member_number FROM voters WHERE status = 'active' ORDER BY id ASC LIMIT 1")->row_array();
+            if ($voter) {
+                $this->db->query("UPDATE voters SET has_voted = 0, voted_at = NULL WHERE id = ?", array($voter['id']));
+            }
+        }
+
+        if (!$voter) {
+            die('Tidak ada data pemilih aktif di tabel voters.');
+        }
+
+        $this->session->sess_regenerate(TRUE);
+        $this->session->set_userdata(array(
+            'voter_id' => $voter['id'],
+            'voter_name' => $voter['name'],
+            'member_number' => $voter['member_number'],
+            'booth_entry_time' => time()
+        ));
+
+        redirect('voting/ballot');
+    }
+
     public function success() {
         $receipt = $this->input->get('receipt', TRUE);
         $clean_receipt = trim((string)$receipt);

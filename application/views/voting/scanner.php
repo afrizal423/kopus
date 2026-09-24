@@ -56,6 +56,14 @@
                 <span id="statusText">Sensor RFID Siap Menerima Kartu</span>
             </div>
 
+            <?php if (ENVIRONMENT !== 'production' || in_array($this->input->ip_address(), array('127.0.0.1', '::1'), true)): ?>
+            <div class="mt-4 pt-3 border-top text-center">
+                <a href="<?= base_url('voting/dev_booth'); ?>" class="btn btn-sm btn-outline-secondary" style="font-size: 0.8rem;">
+                    <i class="fas fa-terminal text-success me-1"></i> Mode Dev: Masuk Bilik Uji Coba (Tanpa RFID)
+                </a>
+            </div>
+            <?php endif; ?>
+
             <!-- Hidden RFID Wedge Input Form -->
             <form id="rfidForm" class="visually-hidden">
                 <input type="password" id="rfidUid" name="rfid_uid" autocomplete="off" autofocus>
