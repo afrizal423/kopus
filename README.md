@@ -55,6 +55,7 @@ KOPUS mengatasi ini dengan konsep **Blockchain-like Ledger**:
 3. **Deteksi Manipulasi Presisi**: Mesin verifikasi di `Voting_model::verify_ledger_integrity()` merekomputasi seluruh rantai hash dari baris pertama sampai terakhir.
    - Jika ada baris yang diubah (misal `candidate_id` diedit dari 1 ke 2), sistem **seketika mendeteksi nomor baris database yang rusak** dan menandai sistem sebagai **"KECURANGAN TERDETEKSI"**.
    - Jika ada baris yang disisipkan atau dihapus di tengah, rantai hash terputus dan langsung teridentifikasi.
+   - Prosedur mitigasi dan SOP penanganan saat manipulasi terdeteksi diatur lengkap di dokumen **[docs/sop-penanganan-insiden-ledger.md](docs/sop-penanganan-insiden-ledger.md)**.
 
 ### B. Mitigasi Race Condition (Anti-Double Voting)
 Untuk mencegah pemilih melakukan tap kartu ganda secara cepat atau mengirimkan multiple parallel requests untuk mencoblos lebih dari sekali:
@@ -252,6 +253,9 @@ vote-koperasi/
 ├── database/
 │   ├── apply_migration.php    # Script otomatisasi migrasi database CLI
 │   └── migration.sql          # Skema database MySQL lengkap + seed data
+├── docs/
+│   ├── audit-keamanan.md      # Laporan Audit Keamanan OWASP Top 10
+│   └── sop-penanganan-insiden-ledger.md # SOP Penanganan Kecurangan & Kerusakan Ledger
 ├── index.php                  # Titik masuk utama aplikasi CodeIgniter
 └── README.md                  # Dokumentasi teknis lengkap proyek KOPUS
 ```

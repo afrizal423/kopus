@@ -1,3 +1,31 @@
+<?php
+$daftar_hari = array(
+    'Sunday' => 'Minggu',
+    'Monday' => 'Senin',
+    'Tuesday' => 'Selasa',
+    'Wednesday' => 'Rabu',
+    'Thursday' => 'Kamis',
+    'Friday' => 'Jumat',
+    'Saturday' => 'Sabtu'
+);
+$daftar_bulan = array(
+    'January' => 'Januari',
+    'February' => 'Februari',
+    'March' => 'Maret',
+    'April' => 'April',
+    'May' => 'Mei',
+    'June' => 'Juni',
+    'July' => 'Juli',
+    'August' => 'Agustus',
+    'September' => 'September',
+    'October' => 'Oktober',
+    'November' => 'November',
+    'December' => 'Desember'
+);
+$hari_ini = $daftar_hari[date('l')] ?? date('l');
+$bulan_ini = $daftar_bulan[date('F')] ?? date('F');
+$tanggal_indo = $hari_ini . ', ' . date('d') . ' ' . $bulan_ini . ' ' . date('Y');
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -60,7 +88,7 @@
         </div>
 
         <p style="text-indent: 30px; text-align: justify;">
-            Pada hari ini, <strong><?= date('l, d F Y'); ?></strong>, telah diselenggarakan rapat pemilihan secara elektronik untuk menetapkan kepengurusan dan kepengawasan <strong><?= htmlspecialchars($settings['cooperative_name']); ?></strong> periode berkenaan, dengan rekapitulasi data sebagai berikut:
+            Pada hari ini, <strong><?= $tanggal_indo; ?></strong>, telah diselenggarakan rapat pemilihan secara elektronik untuk menetapkan kepengurusan dan kepengawasan <strong><?= htmlspecialchars($settings['cooperative_name']); ?></strong> periode berkenaan, dengan rekapitulasi data sebagai berikut:
         </p>
 
         <!-- Ringkasan Kehadiran DPT -->
@@ -147,7 +175,7 @@
             </div>
             <div class="col-6">
                 <p class="mb-5">Ketua Panitia Pemilihan,</p>
-                <p class="fw-bold text-decoration-underline mb-0">( <?= htmlspecialchars($this->session->userdata('admin_name') ?? 'Ketua Panitia'); ?> )</p>
+                <p class="fw-bold text-decoration-underline mb-0">( .................................................... )</p>
                 <small class="text-muted">NIP/Nomor Anggota</small>
             </div>
         </div>

@@ -125,8 +125,37 @@
                                 </span>
                                 <?php endif; ?>
                             </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#modalIncidentSOP">
+                                <i class="fas fa-book-reader me-1"></i> Panduan SOP
+                            </button>
                             <button type="button" class="btn btn-outline-success btn-sm fw-semibold" id="btnAuditRun">
                                 <i class="fas fa-sync-alt me-1"></i> Uji Keutuhan Ledger
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Incident Action Banner (Hanya muncul jika manipulasi terdeteksi) -->
+                <div class="alert alert-danger border border-danger-subtle p-3 mb-4 rounded-3 <?= ($integrity['is_valid']) ? 'd-none' : ''; ?>" id="tamperAlertBanner" role="alert">
+                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="text-danger fs-3 lh-1 mt-1">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-danger mb-1">Peringatan Integritas: Terdeteksi Anomali pada Database Pemilihan</h6>
+                                <p class="small text-danger-emphasis mb-1" id="tamperAlertMsg">
+                                    <?= htmlspecialchars($integrity['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                                </p>
+                                <span class="small text-muted">Prinsip Darurat: <strong>Jangan lakukan reset data secara langsung</strong> agar barang bukti digital tidak hilang.</span>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2 mt-md-0">
+                            <button type="button" class="btn btn-danger btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#modalIncidentSOP">
+                                <i class="fas fa-list-ol me-1"></i> Langkah SOP
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm fw-semibold bg-white" id="btnQuickPause">
+                                <i class="fas fa-pause-circle me-1"></i> Jeda Pemilihan
                             </button>
                         </div>
                     </div>
@@ -328,6 +357,113 @@
         </div>
     </div>
 
+    <!-- Modal SOP Penanganan Insiden Ledger -->
+    <div class="modal fade" id="modalIncidentSOP" tabindex="-1" aria-labelledby="modalIncidentSOPLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-light border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-shield-alt text-success fs-5"></i>
+                        <h5 class="modal-title fw-bold" id="modalIncidentSOPLabel">SOP Penanganan Insiden Keamanan &amp; Integritas Ledger</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Callout Alert Prinsip Utama -->
+                    <div class="alert alert-warning border border-warning-subtle d-flex align-items-start gap-3 mb-4 py-3" role="alert">
+                        <i class="fas fa-exclamation-circle text-warning fs-4 mt-1"></i>
+                        <div>
+                            <div class="fw-bold text-dark mb-1">Prinsip Utama: JANGAN LANGSUNG RESET DATABASE!</div>
+                            <div class="small text-secondary">Mereset database secara terburu-buru akan <strong>menghilangkan barang bukti forensik digital</strong>. Data suara yang masuk sebelum titik manipulasi masih sah dan dapat dilacak. Amankan bukti terlebih dahulu.</div>
+                        </div>
+                    </div>
+
+                    <!-- 5 Langkah Penanganan -->
+                    <h6 class="fw-bold text-dark mb-3">5 Fase Tindakan Tanggap Darurat</h6>
+                    
+                    <div class="list-group list-group-flush border rounded-3 mb-4">
+                        <div class="list-group-item p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-danger rounded-1">Fase 1</span>
+                                <strong class="text-dark">Bekukan Sistem Pemilihan (Waktu Respon &lt; 3 Menit)</strong>
+                            </div>
+                            <p class="small text-muted mb-2">Buka menu <strong>Pengaturan Sesi Pemilihan</strong> dan ubah Status Pemilihan menjadi <code>paused</code> (dijeda). Bilik suara otomatis terkunci sehingga tidak ada suara baru yang masuk ke rantai yang sedang rusak.</p>
+                            <button type="button" class="btn btn-outline-danger btn-sm py-1 px-2" id="btnSopPause">
+                                <i class="fas fa-pause-circle me-1"></i> Buka Pengaturan Status Pemilihan
+                            </button>
+                        </div>
+
+                        <div class="list-group-item p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-secondary rounded-1">Fase 2</span>
+                                <strong class="text-dark">Amankan Barang Bukti Forensik Digital</strong>
+                            </div>
+                            <p class="small text-muted mb-2">Lakukan snapshot dan backup database lengkap menggunakan MySQL dump melalui command line sebelum mengubah data apa pun:</p>
+                            <code class="d-block bg-light text-dark p-2 rounded border small mb-2 user-select-all">mysqldump -u root -p vote_koperasi &gt; incident_evidence_backup.sql</code>
+                            <p class="small text-muted mb-0">Simpan tangkapan layar peringatan dashboard dan catat nomor baris database yang bermasalah.</p>
+                        </div>
+
+                        <div class="list-group-item p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-secondary rounded-1">Fase 3</span>
+                                <strong class="text-dark">Investigasi &amp; Rekonsiliasi Data</strong>
+                            </div>
+                            <p class="small text-muted mb-1">Periksa baris suara pada tabel <code>votes</code> sesuai ID yang dilaporkan oleh sistem:</p>
+                            <ul class="small text-muted ps-3 mb-2">
+                                <li>Bandingkan jumlah pemilih hadir di DPT (<code>has_voted = 1</code>) dengan total baris di tabel suara. Jika selisih, ada suara yang dihapus atau disisipkan secara ilegal.</li>
+                                <li>Cocokkan token tanda terima pemilih (<code>receipt_token</code>) pada baris yang rusak dengan tanda terima fisik yang dipegang pemilih.</li>
+                                <li>Periksa tabel <code>audit_logs</code> untuk melacak aktivitas user dan IP yang mengakses sistem saat kejadian.</li>
+                            </ul>
+                        </div>
+
+                        <div class="list-group-item p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-secondary rounded-1">Fase 4</span>
+                                <strong class="text-dark">Sidang Pleno Panitia, Pengawas, &amp; Saksi</strong>
+                            </div>
+                            <p class="small text-muted mb-2">Kumpulkan seluruh pihak berwenang untuk menentukan keputusan resmi:</p>
+                            <div class="row g-2 small">
+                                <div class="col-md-6">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="fw-semibold text-dark">Opsi A: Koreksi Baris Terisolasi</div>
+                                        <div class="text-muted">Jika kerusakan minor (1 baris), bukti token pemilih sah tersedia, dan disetujui semua saksi dalam Berita Acara Insiden.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="fw-semibold text-dark">Opsi B: Pemungutan Suara Ulang (PSU)</div>
+                                        <div class="text-muted">Jika terjadi manipulasi masif, banyak baris hilang, atau saksi menolak keabsahan data yang tercemar.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-dark rounded-1">Fase 5</span>
+                                <strong class="text-dark">Prosedur Reset Terkontrol (Khusus Skenario PSU)</strong>
+                            </div>
+                            <p class="small text-muted mb-2">Jika diputuskan PSU dalam Berita Acara resmi, eksekusi pembersihan database:</p>
+                            <pre class="bg-light text-dark p-2 rounded border small mb-0 font-monospace"><code>TRUNCATE TABLE votes;
+UPDATE voters SET has_voted = 0, voted_at = NULL;
+UPDATE election_settings SET setting_value = MD5(CONCAT(NOW(), UUID())) WHERE setting_key = 'ledger_secret_salt';
+UPDATE election_settings SET setting_value = 'open' WHERE setting_key = 'election_status';</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+                        <div class="small text-muted">
+                            <i class="fas fa-file-alt me-1"></i> Dokumentasi teknis lengkap tersedia di berkas <code>docs/sop-penanganan-insiden-ledger.md</code>.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     $(document).ready(function() {
         $('#btnAuditRun').on('click', function() {
@@ -344,6 +480,7 @@
 
                     if (res.is_valid) {
                         $('#tamperBadge').html('<span class="tamper-badge-valid"><i class="fas fa-check-circle"></i> Database Utuh & Valid</span>');
+                        $('#tamperAlertBanner').slideUp();
                         Swal.fire({
                             title: 'Integritas Terverifikasi',
                             text: res.message,
@@ -352,11 +489,21 @@
                         });
                     } else {
                         $('#tamperBadge').html('<span class="tamper-badge-corrupt"><i class="fas fa-exclamation-triangle"></i> Manipulasi Terdeteksi!</span>');
+                        $('#tamperAlertMsg').text(res.message);
+                        $('#tamperAlertBanner').removeClass('d-none').hide().slideDown();
                         Swal.fire({
-                            title: 'Peringatan Kecurangan!',
+                            title: 'Peringatan Manipulasi Terdeteksi!',
                             text: res.message,
                             icon: 'error',
-                            confirmButtonColor: '#dc2626'
+                            confirmButtonColor: '#dc2626',
+                            showCancelButton: true,
+                            confirmButtonText: '<i class="fas fa-book-reader me-1"></i> Buka Panduan SOP',
+                            cancelButtonText: 'Tutup'
+                        }).then(function(result) {
+                            if (result.isConfirmed) {
+                                var sopModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalIncidentSOP'));
+                                sopModal.show();
+                            }
                         });
                     }
                 },
@@ -365,6 +512,24 @@
                     Swal.fire('Error', 'Gagal menghubungi server verifikasi.', 'error');
                 }
             });
+        });
+
+        // Quick Pause handler from Emergency Banner
+        $('#btnQuickPause').on('click', function() {
+            $('#modalSettings select[name="election_status"]').val('paused');
+            var settingsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSettings'));
+            settingsModal.show();
+        });
+
+        // Pause handler from within SOP Modal
+        $('#btnSopPause').on('click', function() {
+            var sopModal = bootstrap.Modal.getInstance(document.getElementById('modalIncidentSOP'));
+            if (sopModal) {
+                sopModal.hide();
+            }
+            $('#modalSettings select[name="election_status"]').val('paused');
+            var settingsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSettings'));
+            settingsModal.show();
         });
     });
     </script>
