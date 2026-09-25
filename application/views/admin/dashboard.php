@@ -258,7 +258,7 @@
                         <div class="admin-card">
                             <span class="text-muted small fw-semibold">Total DPT Anggota</span>
                             <div class="d-flex justify-content-between align-items-baseline mt-2">
-                                <span class="fs-3 fw-bold text-dark"><?= number_format($stats['total_voters']); ?></span>
+                                <span class="fs-3 fw-bold text-dark" id="metricTotalVoters"><?= number_format($stats['total_voters']); ?></span>
                                 <span class="badge bg-light text-secondary border">Hak Suara</span>
                             </div>
                         </div>
@@ -268,8 +268,8 @@
                         <div class="admin-card">
                             <span class="text-muted small fw-semibold">Sudah Menggunakan Hak Suara</span>
                             <div class="d-flex justify-content-between align-items-baseline mt-2">
-                                <span class="fs-3 fw-bold text-success"><?= number_format($stats['voted_count']); ?></span>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle"><?= $stats['turnout_percentage']; ?>%</span>
+                                <span class="fs-3 fw-bold text-success" id="metricVotedCount"><?= number_format($stats['voted_count']); ?></span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" id="metricTurnoutPercentage"><?= $stats['turnout_percentage']; ?>%</span>
                             </div>
                         </div>
                     </div>
@@ -278,7 +278,7 @@
                         <div class="admin-card">
                             <span class="text-muted small fw-semibold">Belum Memilih</span>
                             <div class="d-flex justify-content-between align-items-baseline mt-2">
-                                <span class="fs-3 fw-bold text-secondary"><?= number_format($stats['remaining_voters']); ?></span>
+                                <span class="fs-3 fw-bold text-secondary" id="metricRemainingVoters"><?= number_format($stats['remaining_voters']); ?></span>
                                 <span class="badge bg-light text-muted border">Tersisa</span>
                             </div>
                         </div>
@@ -288,7 +288,7 @@
                         <div class="admin-card">
                             <span class="text-muted small fw-semibold">Total Suara Sah Tercatat</span>
                             <div class="d-flex justify-content-between align-items-baseline mt-2">
-                                <span class="fs-3 fw-bold text-primary"><?= number_format($stats['total_votes_recorded']); ?></span>
+                                <span class="fs-3 fw-bold text-primary" id="metricTotalVotesRecorded"><?= number_format($stats['total_votes_recorded']); ?></span>
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Kriptografis</span>
                             </div>
                         </div>
@@ -303,7 +303,12 @@
                                 <i class="fas fa-cubes fs-5"></i>
                             </span>
                             <div>
-                                <h6 class="fw-bold mb-0 text-dark">Visualisasi 3D Live Quick Count: Pilar Perolehan Suara</h6>
+                                <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2 flex-wrap">
+                                    <span>Visualisasi 3D Live Quick Count: Pilar Perolehan Suara</span>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle px-2 py-1 small" id="liveSyncBadge" style="font-size: 0.65rem;" title="Sinkronisasi Suara Real-Time Aktif (Background Polling)">
+                                        <i class="fas fa-circle text-success me-1 fa-beat" style="font-size: 0.45rem;"></i> LIVE SYNC
+                                    </span>
+                                </h6>
                                 <small class="text-muted">Grafik pilar 3D interaktif real-time untuk penayangan hasil di aula atau layar utama</small>
                             </div>
                         </div>
@@ -370,12 +375,12 @@
                                 <h6 class="fw-bold mb-0 text-dark">
                                     <i class="fas fa-user-tie text-success me-2"></i>Hasil Perolehan: Calon Ketua Koperasi
                                 </h6>
-                                <span class="badge bg-light text-dark border">
+                                <span class="badge bg-light text-dark border" id="totalVotesKetua">
                                     Total Suara: <?= number_format($stats['results']['ketua']['total_category_votes']); ?>
                                 </span>
                             </div>
 
-                            <div class="d-flex flex-column gap-3">
+                            <div class="d-flex flex-column gap-3" id="tableResultsKetua">
                                 <?php foreach ($stats['results']['ketua']['candidates'] as $c): ?>
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
@@ -404,12 +409,12 @@
                                 <h6 class="fw-bold mb-0 text-dark">
                                     <i class="fas fa-clipboard-check text-primary me-2"></i>Hasil Perolehan: Calon Pengawas Koperasi
                                 </h6>
-                                <span class="badge bg-light text-dark border">
+                                <span class="badge bg-light text-dark border" id="totalVotesPengawas">
                                     Total Suara: <?= number_format($stats['results']['pengawas']['total_category_votes']); ?>
                                 </span>
                             </div>
 
-                            <div class="d-flex flex-column gap-3">
+                            <div class="d-flex flex-column gap-3" id="tableResultsPengawas">
                                 <?php foreach ($stats['results']['pengawas']['candidates'] as $c): ?>
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
@@ -688,6 +693,100 @@ UPDATE election_settings SET setting_value = 'open' WHERE setting_key = 'electio
             var settingsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSettings'));
             settingsModal.show();
         });
+
+        // --- REAL-TIME LIVE AUTO-SYNC (Background Polling) ---
+        function renderTableCategory(containerId, candidates, badgeClass, barColorClass) {
+            const $container = $('#' + containerId);
+            if (!$container.length || !Array.isArray(candidates)) return;
+
+            let html = '';
+            candidates.forEach(function(c) {
+                const num = c.candidate_number || '';
+                const name = $('<div>').text(c.name || '').html();
+                const votes = Number(c.vote_count || 0).toLocaleString();
+                const pct = c.percentage || 0;
+
+                html += '<div>' +
+                    '<div class="d-flex justify-content-between align-items-center mb-1">' +
+                        '<div class="d-flex align-items-center gap-2">' +
+                            '<span class="badge bg-' + badgeClass + ' text-dark fw-bold">#' + num + '</span>' +
+                            '<span class="fw-semibold text-dark">' + name + '</span>' +
+                        '</div>' +
+                        '<div>' +
+                            '<span class="fw-bold text-dark">' + votes + ' suara</span>' +
+                            '<span class="text-muted ms-1">(' + pct + '%)</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="progress" style="height: 10px;">' +
+                        '<div class="progress-bar bg-' + barColorClass + '" role="progressbar" style="width: ' + pct + '%" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"></div>' +
+                    '</div>' +
+                '</div>';
+            });
+            $container.html(html);
+        }
+
+        function updateDashboardUI(stats) {
+            if (!stats) return;
+
+            // 1. Update 4 Metric Cards
+            if (stats.total_voters !== undefined) $('#metricTotalVoters').text(Number(stats.total_voters).toLocaleString());
+            if (stats.voted_count !== undefined) $('#metricVotedCount').text(Number(stats.voted_count).toLocaleString());
+            if (stats.turnout_percentage !== undefined) $('#metricTurnoutPercentage').text(stats.turnout_percentage + '%');
+            if (stats.remaining_voters !== undefined) $('#metricRemainingVoters').text(Number(stats.remaining_voters).toLocaleString());
+            if (stats.total_votes_recorded !== undefined) $('#metricTotalVotesRecorded').text(Number(stats.total_votes_recorded).toLocaleString());
+
+            // 2. Update 3D Quick Count Pillars
+            if (typeof window.update3DLiveQuickCount === 'function' && stats.results) {
+                window.update3DLiveQuickCount(stats.results);
+            }
+
+            // 3. Update Summary Tables below
+            if (stats.results) {
+                if (stats.results.ketua) {
+                    $('#totalVotesKetua').text('Total Suara: ' + Number(stats.results.ketua.total_category_votes).toLocaleString());
+                    renderTableCategory('tableResultsKetua', stats.results.ketua.candidates, 'warning', 'success');
+                }
+                if (stats.results.pengawas) {
+                    $('#totalVotesPengawas').text('Total Suara: ' + Number(stats.results.pengawas.total_category_votes).toLocaleString());
+                    renderTableCategory('tableResultsPengawas', stats.results.pengawas.candidates, 'info', 'primary');
+                }
+            }
+        }
+
+        let isPolling = false;
+        function fetchLiveStats() {
+            if (isPolling) return;
+            if (document.hidden) return; // Pause polling when tab is inactive
+
+            isPolling = true;
+            $.ajax({
+                url: '<?= base_url("admin/live_stats"); ?>',
+                type: 'GET',
+                dataType: 'json',
+                cache: false,
+                success: function(res) {
+                    isPolling = false;
+                    if (res && res.status === 'success' && res.stats) {
+                        updateDashboardUI(res.stats);
+                        $('#liveSyncBadge').html('<i class="fas fa-circle text-success me-1 fa-beat" style="font-size: 0.45rem;"></i> LIVE SYNC').removeClass('border-warning text-warning').addClass('border-success-subtle text-success');
+                    }
+                },
+                error: function() {
+                    isPolling = false;
+                    $('#liveSyncBadge').html('<i class="fas fa-circle text-warning me-1" style="font-size: 0.45rem;"></i> RECONNECTING...').removeClass('border-success-subtle text-success').addClass('border-warning text-warning');
+                }
+            });
+        }
+
+        // Poll every 3.5 seconds
+        setInterval(fetchLiveStats, 3500);
+
+        // Immediate poll on tab focus
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                fetchLiveStats();
+            }
+        });
     });
     </script>
 
@@ -928,14 +1027,116 @@ UPDATE election_settings SET setting_value = 'open' WHERE setting_key = 'electio
                 }
 
                 pillars.push({
+                    candidateId: c.id,
                     mesh: pMesh,
+                    cylMat: cylMat,
                     crownRing: crownRing,
                     label: labelMesh,
                     targetHeight: targetH,
+                    pillarRadius: pillarRadius,
                     x: xPos
                 });
             });
         }
+
+        // Live real-time sync updater for 3D pillars (Zero-glitch in-place interpolation)
+        function updateQuickCountData(results) {
+            if (!results) return;
+            if (results.ketua && results.ketua.candidates) {
+                countStats.ketua = results.ketua.candidates;
+            }
+            if (results.pengawas && results.pengawas.candidates) {
+                countStats.pengawas = results.pengawas.candidates;
+            }
+
+            const candidates = countStats[currentCat] || [];
+            if (candidates.length === 0) return;
+
+            // Check if existing pillars match current candidates
+            let match = (pillars.length === candidates.length);
+            if (match) {
+                for (let i = 0; i < candidates.length; i++) {
+                    if (pillars[i].candidateId != candidates[i].id) {
+                        match = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!match) {
+                rebuildPillars(currentCat);
+                return;
+            }
+
+            // Find leader
+            let maxVotes = 0;
+            let leader = candidates[0];
+            candidates.forEach(c => {
+                const votes = parseInt(c.vote_count) || 0;
+                if (votes > maxVotes) {
+                    maxVotes = votes;
+                    leader = c;
+                }
+            });
+
+            if (stageBadge) {
+                const catLabel = (currentCat === 'ketua') ? 'Ketua' : 'Pengawas';
+                if (maxVotes > 0) {
+                    stageBadge.innerHTML = `<i class="fas fa-crown text-warning me-1"></i> Unggul ${catLabel}: <strong>${leader.name}</strong> (${leader.vote_count} suara / ${leader.percentage}%)`;
+                } else {
+                    stageBadge.innerHTML = `<i class="fas fa-cubes text-info me-1"></i> Rekapitulasi: Calon ${catLabel} (Menunggu Suara Masuk)`;
+                }
+            }
+
+            const baseColor = (currentCat === 'ketua') ? 0x059669 : 0x2563eb;
+            const leaderColor = (currentCat === 'ketua') ? 0x10b981 : 0x0284c7;
+
+            candidates.forEach((c, idx) => {
+                const p = pillars[idx];
+                const voteCount = parseInt(c.vote_count) || 0;
+                const isLeader = (voteCount > 0 && c.id === leader.id);
+
+                let targetH = 0.35;
+                if (maxVotes > 0) {
+                    targetH = 0.35 + (voteCount / maxVotes) * 1.8;
+                }
+                p.targetHeight = targetH;
+
+                // Update cylinder color
+                if (p.cylMat) {
+                    p.cylMat.color.setHex(isLeader ? leaderColor : baseColor);
+                }
+
+                // Update billboard texture with smooth texture replacement
+                if (p.label && p.label.material) {
+                    const oldMap = p.label.material.map;
+                    p.label.material.map = createTextTexture(c.name, c.percentage + '%', isLeader, c.candidate_number, voteCount);
+                    p.label.material.needsUpdate = true;
+                    if (oldMap) oldMap.dispose();
+                }
+
+                // Manage leader ring
+                if (isLeader) {
+                    if (!p.crownRing) {
+                        const pr = p.pillarRadius || 0.42;
+                        const cRingGeo = new THREE.TorusGeometry(pr + 0.04, 0.025, 16, 32);
+                        const cRingMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 });
+                        p.crownRing = new THREE.Mesh(cRingGeo, cRingMat);
+                        p.crownRing.rotation.x = Math.PI / 2;
+                        pillarGroup.add(p.crownRing);
+                    }
+                } else {
+                    if (p.crownRing) {
+                        pillarGroup.remove(p.crownRing);
+                        if (p.crownRing.geometry) p.crownRing.geometry.dispose();
+                        if (p.crownRing.material) p.crownRing.material.dispose();
+                        p.crownRing = null;
+                    }
+                }
+            });
+        }
+
+        window.update3DLiveQuickCount = updateQuickCountData;
 
         function setupInteraction() {
             const el = stageWrap;

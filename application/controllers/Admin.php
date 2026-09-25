@@ -290,6 +290,19 @@ class Admin extends CI_Controller {
             ->set_output(json_encode($result));
     }
 
+    public function live_stats() {
+        $this->require_auth();
+        $stats = $this->Admin_model->get_dashboard_stats();
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'status' => 'success',
+                'stats' => $stats,
+                'timestamp' => date('Y-m-d H:i:s')
+            )));
+    }
+
     public function settings_save() {
         $this->require_auth();
         if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
