@@ -19,6 +19,9 @@ class Voting extends CI_Controller {
 
     public function index() {
         $data['settings'] = $this->Voting_model->get_election_status();
+        $data['ketua_candidates'] = $this->Voting_model->get_candidates('ketua');
+        $data['pengawas_candidates'] = $this->Voting_model->get_candidates('pengawas');
+        $data['all_candidates'] = array_merge($data['ketua_candidates'], $data['pengawas_candidates']);
         $this->load->view('voting/scanner', $data);
     }
 

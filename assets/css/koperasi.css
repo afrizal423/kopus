@@ -2190,5 +2190,688 @@ body.is-ballot-page .a11y-fab-container {
   margin-bottom: 0.5rem;
 }
 
+/* ==========================================================================
+   KIOSK RETAIL CANDIDATE ROULETTE & SCANNER STYLES
+   ========================================================================== */
+.kiosk-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--kop-bg);
+  position: relative;
+}
+
+.kiosk-clock-badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--kop-slate);
+  background: #f1f5f9;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--kop-radius-sm);
+  border: 1px solid var(--kop-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kiosk-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.kiosk-hero-header {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.kiosk-hero-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--kop-dark);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2rem;
+}
+
+.kiosk-hero-subtitle {
+  font-size: 0.9rem;
+  color: var(--kop-muted);
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* Toolbar & Filters */
+.kiosk-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--kop-surface);
+  border: 1px solid var(--kop-border);
+  border-radius: var(--kop-radius);
+  box-shadow: var(--kop-shadow-sm);
+}
+
+.kiosk-filter-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.kiosk-filter-btn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--kop-radius-sm);
+  border: 1px solid var(--kop-border);
+  background: var(--kop-bg);
+  color: var(--kop-slate);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kiosk-filter-btn:hover {
+  background: #e2e8f0;
+  color: var(--kop-dark);
+}
+
+.kiosk-filter-btn.active {
+  background: var(--kop-primary);
+  border-color: var(--kop-primary);
+  color: #ffffff;
+}
+
+.kiosk-filter-btn.filter-ketua.active {
+  background: #0f5132;
+  border-color: #0f5132;
+}
+
+.kiosk-filter-btn.filter-pengawas.active {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.kiosk-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kiosk-btn-nav {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--kop-border);
+  background: var(--kop-surface);
+  color: var(--kop-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  box-shadow: var(--kop-shadow-sm);
+}
+
+.kiosk-btn-nav:hover {
+  background: var(--kop-primary);
+  border-color: var(--kop-primary);
+  color: #ffffff;
+}
+
+.kiosk-btn-spin {
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  box-shadow: var(--kop-shadow-sm);
+}
+
+.kiosk-btn-spin:hover {
+  background: #fde68a;
+  color: #78350f;
+  transform: translateY(-1px);
+}
+
+/* 3D Roulette Stage */
+.kiosk-roulette-viewport {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  perspective: 1400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  cursor: grab;
+  touch-action: pan-y;
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
+  border-radius: var(--kop-radius-lg);
+  border: 1px dashed rgba(16, 185, 129, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+.kiosk-roulette-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.kiosk-roulette-cylinder {
+  position: absolute;
+  width: 500px;
+  height: 255px;
+  left: 50%;
+  top: 50%;
+  margin-left: -250px;
+  margin-top: -128px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Landscape Candidate Card */
+.kiosk-cand-card {
+  position: absolute;
+  width: 500px;
+  height: 255px;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  border-radius: 16px;
+  background: var(--kop-surface);
+  border: 1px solid var(--kop-border);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 1rem 1.15rem;
+  gap: 1.15rem;
+  backface-visibility: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+  cursor: pointer;
+}
+
+.kiosk-cand-card.is-active-front {
+  border-color: var(--kop-primary);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16), 0 0 0 2px var(--kop-primary);
+  cursor: default;
+}
+
+/* Card Top Color Ribbon */
+.kiosk-card-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.kiosk-card-top-bar.bar-ketua {
+  background: linear-gradient(90deg, #0f5132 0%, #10b981 100%);
+}
+
+.kiosk-card-top-bar.bar-pengawas {
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+/* --- Theme Calon Ketua (Emerald Green Theme) --- */
+.kiosk-cand-card.card-theme-ketua {
+  border: 2px solid #a7f3d0;
+  background: #ffffff;
+}
+
+.kiosk-cand-card.card-theme-ketua .kiosk-cand-left {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-right: 1.5px solid #a7f3d0;
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+
+.kiosk-cand-card.card-theme-ketua .kiosk-cand-photo-wrap {
+  border: 2.5px solid #10b981;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.kiosk-cand-card.card-theme-ketua.is-active-front {
+  border-color: #0f5132;
+  box-shadow: 0 16px 36px rgba(15, 81, 50, 0.22), 0 0 0 2.5px #0f5132;
+}
+
+.kiosk-cand-card.card-theme-ketua .kiosk-cand-vision-box {
+  background: #f0fdf4;
+  border-left: 3.5px solid #0f5132;
+}
+
+.kiosk-cand-card.card-theme-ketua .kiosk-cand-vision-label {
+  color: #0f5132;
+}
+
+.kiosk-cand-card.card-theme-ketua .kiosk-btn-detail {
+  border-color: #10b981;
+  color: #0f5132;
+  background: #f0fdf4;
+}
+
+.kiosk-cand-card.card-theme-ketua .kiosk-btn-detail:hover {
+  background: #0f5132;
+  color: #ffffff;
+  border-color: #0f5132;
+}
+
+/* --- Theme Calon Pengawas (Royal Blue Theme) --- */
+.kiosk-cand-card.card-theme-pengawas {
+  border: 2px solid #bfdbfe;
+  background: #ffffff;
+}
+
+.kiosk-cand-card.card-theme-pengawas .kiosk-cand-left {
+  background: linear-gradient(180deg, #eff6ff 0%, #f0f7ff 100%);
+  border-right: 1.5px solid #bfdbfe;
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+
+.kiosk-cand-card.card-theme-pengawas .kiosk-cand-photo-wrap {
+  border: 2.5px solid #3b82f6;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.kiosk-cand-card.card-theme-pengawas.is-active-front {
+  border-color: #1d4ed8;
+  box-shadow: 0 16px 36px rgba(29, 78, 216, 0.22), 0 0 0 2.5px #1d4ed8;
+}
+
+.kiosk-cand-card.card-theme-pengawas .kiosk-cand-vision-box {
+  background: #eff6ff;
+  border-left: 3.5px solid #1d4ed8;
+}
+
+.kiosk-cand-card.card-theme-pengawas .kiosk-cand-vision-label {
+  color: #1d4ed8;
+}
+
+.kiosk-cand-card.card-theme-pengawas .kiosk-btn-detail {
+  border-color: #60a5fa;
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.kiosk-cand-card.card-theme-pengawas .kiosk-btn-detail:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+/* Left Column: Category, Photo, Number */
+.kiosk-cand-left {
+  width: 135px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--kop-border);
+  padding: 0.5rem 0.85rem 0.5rem 0.35rem;
+}
+
+.kiosk-cand-badge-cat {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.kiosk-cand-badge-cat.cat-ketua {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.kiosk-cand-badge-cat.cat-pengawas {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.kiosk-cand-badge-num {
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.kiosk-cand-photo-wrap {
+  width: 86px;
+  height: 86px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 0.35rem auto;
+  background: #f8fafc;
+  border: 2px solid var(--kop-border);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+}
+
+.kiosk-cand-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Right Column: Name, Vision, Mission, Actions */
+.kiosk-cand-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding-top: 0.15rem;
+}
+
+.kiosk-cand-name {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: var(--kop-dark);
+  text-align: left;
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+  padding-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kiosk-cand-vision-box {
+  background: #f8fafc;
+  border-left: 3px solid #10b981;
+  border-radius: 4px;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+  color: #334155;
+  line-height: 1.35;
+  margin-bottom: 0.35rem;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kiosk-cand-vision-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #0f5132;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.kiosk-cand-mission-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  color: var(--kop-slate);
+  text-align: left;
+  line-height: 1.3;
+}
+
+.kiosk-cand-mission-list li {
+  margin-bottom: 0.18rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kiosk-cand-mission-list li i {
+  color: #10b981;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.kiosk-cand-actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.kiosk-btn-detail {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.28rem 0.65rem;
+  border-radius: var(--kop-radius-sm);
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--kop-slate);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.kiosk-btn-detail:hover {
+  background: #f1f5f9;
+  border-color: var(--kop-primary);
+  color: var(--kop-primary);
+}
+
+.kiosk-cand-prompt {
+  font-size: 0.72rem;
+  color: var(--kop-muted);
+  text-align: right;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Dots Indicator */
+.kiosk-dots-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+.kiosk-dot-item {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.kiosk-dot-item.active {
+  width: 26px;
+  border-radius: 8px;
+  background: var(--kop-primary);
+}
+
+/* Bottom RFID Reader Console / Dock */
+.kiosk-rfid-terminal {
+  background: var(--kop-surface);
+  border: 1px solid var(--kop-border);
+  border-radius: var(--kop-radius-lg);
+  box-shadow: var(--kop-shadow);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.kiosk-rfid-card-stage {
+  width: 170px;
+  height: 105px;
+  position: relative;
+  cursor: grab;
+  flex-shrink: 0;
+  margin: 0 auto;
+}
+
+.kiosk-rfid-info {
+  flex: 1;
+  min-width: 280px;
+}
+
+.kiosk-rfid-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--kop-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.kiosk-rfid-instruction {
+  font-size: 0.84rem;
+  color: var(--kop-muted);
+  margin-bottom: 0.4rem;
+}
+
+.kiosk-rfid-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* A11Y Overrides for Kiosk */
+html.a11y-contrast-dark .kiosk-wrapper {
+  background: #0b0f19 !important;
+}
+
+html.a11y-contrast-dark .kiosk-toolbar,
+html.a11y-contrast-dark .kiosk-cand-card,
+html.a11y-contrast-dark .kiosk-rfid-terminal {
+  background: #111827 !important;
+  border-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+html.a11y-contrast-dark .kiosk-cand-left {
+  border-color: #374151 !important;
+}
+
+html.a11y-contrast-dark .kiosk-hero-title,
+html.a11y-contrast-dark .kiosk-cand-name,
+html.a11y-contrast-dark .kiosk-rfid-title {
+  color: #f1f5f9 !important;
+}
+
+html.a11y-contrast-dark .kiosk-cand-vision-box {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+html.a11y-contrast-dark .kiosk-cand-card.card-theme-ketua {
+  border-color: #059669 !important;
+}
+
+html.a11y-contrast-dark .kiosk-cand-card.card-theme-ketua .kiosk-cand-left {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+}
+
+html.a11y-contrast-dark .kiosk-cand-card.card-theme-pengawas {
+  border-color: #2563eb !important;
+}
+
+html.a11y-contrast-dark .kiosk-cand-card.card-theme-pengawas .kiosk-cand-left {
+  background: #172554 !important;
+  border-color: #2563eb !important;
+}
+
+html.a11y-contrast-yellow .kiosk-wrapper {
+  background: #000000 !important;
+}
+
+html.a11y-contrast-yellow .kiosk-toolbar,
+html.a11y-contrast-yellow .kiosk-cand-card,
+html.a11y-contrast-yellow .kiosk-rfid-terminal {
+  background: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+  box-shadow: none !important;
+}
+
+html.a11y-contrast-yellow .kiosk-cand-left {
+  border-color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .kiosk-hero-title,
+html.a11y-contrast-yellow .kiosk-cand-name,
+html.a11y-contrast-yellow .kiosk-rfid-title,
+html.a11y-contrast-yellow .kiosk-hero-subtitle,
+html.a11y-contrast-yellow .kiosk-rfid-instruction {
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .kiosk-cand-vision-box {
+  background: #000000 !important;
+  border: 1px solid #facc15 !important;
+  border-left: 4px solid #facc15 !important;
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .kiosk-cand-badge-cat,
+html.a11y-contrast-yellow .kiosk-cand-badge-num,
+html.a11y-contrast-yellow .kiosk-btn-spin,
+html.a11y-contrast-yellow .kiosk-btn-nav,
+html.a11y-contrast-yellow .kiosk-filter-btn,
+html.a11y-contrast-yellow .kiosk-btn-detail {
+  background: #000000 !important;
+  border: 1px solid #facc15 !important;
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .kiosk-filter-btn.active {
+  background: #facc15 !important;
+  color: #000000 !important;
+}
+
+html.a11y-contrast-yellow .kiosk-dot-item.active {
+  background: #facc15 !important;
+}
+
+
 
 
