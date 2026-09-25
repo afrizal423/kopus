@@ -730,7 +730,8 @@ class Admin extends CI_Controller {
             $sheet->setCellValue('A' . $rowIdx, $no++);
             $sheet->setCellValueExplicit('B' . $rowIdx, (string)$item['receipt_token'], PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('C' . $rowIdx, (string)$item['member_number'], PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValue('D' . $rowIdx, $item['name']);
+            $vName = !empty($item['name']) ? $item['name'] : ($item['voter_name'] ?? '-');
+            $sheet->setCellValue('D' . $rowIdx, $vName);
             $sheet->setCellValue('E' . $rowIdx, $item['voted_at'] ? date('d/m/Y H:i:s', strtotime($item['voted_at'])) : '-');
             $sheet->setCellValue('F' . $rowIdx, 'HADIR & MEMILIH');
 

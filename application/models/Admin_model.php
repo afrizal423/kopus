@@ -322,7 +322,7 @@ class Admin_model extends CI_Model {
 
     public function get_doorprize_participants($search = '') {
         $clean = trim((string)$search);
-        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.name AS voter_name, vt.voted_at,
+        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.name, vt.name AS voter_name, vt.voted_at,
                        COALESCE((SELECT receipt_token FROM votes WHERE voter_id = vt.id LIMIT 1), CONCAT('KOP-', UPPER(SUBSTRING(MD5(vt.id), 1, 8)))) AS receipt_token
                 FROM voters vt
                 WHERE vt.has_voted = 1 AND vt.status = 'active'";

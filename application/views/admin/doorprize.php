@@ -232,7 +232,7 @@
                                     <td>
                                         <span class="badge bg-light text-dark border font-monospace"><?= htmlspecialchars($p['member_number']); ?></span>
                                     </td>
-                                    <td class="fw-semibold text-dark"><?= htmlspecialchars($p['name']); ?></td>
+                                    <td class="fw-semibold text-dark"><?= htmlspecialchars(!empty($p['name']) ? $p['name'] : ($p['voter_name'] ?? '-')); ?></td>
                                     <td class="small text-muted font-monospace">
                                         <?= $p['voted_at'] ? date('d/m/Y H:i:s', strtotime($p['voted_at'])) : '-'; ?>
                                     </td>
@@ -356,14 +356,14 @@
 
             function tick() {
                 const randomPick = pool[Math.floor(Math.random() * pool.length)];
-                rollerName.textContent = randomPick.name;
+                const displayName = randomPick.name || randomPick.voter_name || 'Peserta';
+                rollerName.textContent = displayName;
                 rollerSub.textContent = 'No. Anggota: ' + randomPick.member_number + ' | Tiket: ' + randomPick.receipt_token;
 
                 elapsed = Date.now() - startTime;
                 if (elapsed < duration) {
                     spinInterval = setTimeout(tick, speed);
                 } else {
-                    // Winner selected
                     const finalWinner = pool[Math.floor(Math.random() * pool.length)];
                     finalizeWinner(finalWinner);
                 }
@@ -374,7 +374,8 @@
 
         function finalizeWinner(winner) {
             drawnWinnerIds.add(winner.voter_id);
-            rollerName.textContent = winner.name;
+            const winnerName = winner.name || winner.voter_name || 'Peserta';
+            rollerName.textContent = winnerName;
             rollerSub.textContent = 'No. Anggota: ' + winner.member_number + ' | Tiket: ' + winner.receipt_token;
             
             isSpinning = false;
@@ -382,23 +383,22 @@
             btnCloseLuckyModal.disabled = false;
             updateAvailableBadge();
 
-            // Run simple canvas confetti
             runConfetti();
 
-            // Append to Winner List in Main Screen
             recordWinnerCard(winner, prizeTitle.value || 'Doorprize RAT');
         }
 
         function recordWinnerCard(winner, prize) {
             winnerSection.style.display = 'block';
 
+            const winnerName = winner.name || winner.voter_name || 'Peserta';
             const card = document.createElement('div');
             card.className = 'winner-card';
             card.innerHTML = `
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="winner-tag">${escapeHtml(prize)}</span>
-                        <strong class="text-dark fs-6">${escapeHtml(winner.name)}</strong>
+                        <strong class="text-dark fs-6">${escapeHtml(winnerName)}</strong>
                     </div>
                     <div class="small text-muted font-monospace">
                         No. Anggota: <strong>${escapeHtml(winner.member_number)}</strong> | Kupon Sah: <code>${escapeHtml(winner.receipt_token)}</code>
