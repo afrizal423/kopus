@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/koperasi.css'); ?>">
     <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/three/three.min.js'); ?>"></script>
     <style>
         .lucky-screen {
             background-color: #0f172a;
@@ -278,10 +279,14 @@
                     </div>
 
                     <!-- Screen Display -->
-                    <div class="lucky-screen mb-3">
-                        <canvas id="confettiCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none;"></canvas>
-                        <div class="text-uppercase small tracking-wide text-warning fw-bold mb-2" id="screenPrizeLabel">Doorprize RAT Koperasi</div>
-                        <div class="lucky-roller" id="rollerName">--- SIAP DIUNDI ---</div>
+                    <div class="lucky-screen mb-3 py-3">
+                        <canvas id="confettiCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:5; display:none;"></canvas>
+                        <div class="text-uppercase small tracking-wide text-warning fw-bold mb-1" id="screenPrizeLabel">Doorprize RAT Koperasi</div>
+                        
+                        <!-- 3D Holographic Lucky Draw Sphere -->
+                        <div id="luckySphereWrap" style="width: 100%; height: 190px; position: relative; margin: 0 auto;"></div>
+
+                        <div class="lucky-roller mt-1" id="rollerName">--- SIAP DIUNDI ---</div>
                         <div class="lucky-sub" id="rollerSub">Tekan tombol putar di bawah untuk memilih pemenang</div>
                     </div>
 
@@ -335,6 +340,171 @@
             }
         }
 
+        // 3D Holographic Lucky Draw Sphere State
+        let luckyScene, luckyCamera, luckyRenderer, luckyAnimId;
+        let sphereCage, ringGold, ringEmerald, balls = [], winnerOrb, coreLight;
+        const sphereWrap = document.getElementById('luckySphereWrap');
+        let spinSpeedFactor = 1.0;
+        let targetSpinSpeed = 1.0;
+        let is3DActive = false;
+
+        function init3DLuckySphere() {
+            if (!window.THREE || !sphereWrap) return;
+            const w = sphereWrap.clientWidth || 450;
+            const h = sphereWrap.clientHeight || 190;
+
+            luckyScene = new THREE.Scene();
+            luckyCamera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
+            luckyCamera.position.set(0, 0, 4.8);
+
+            luckyRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            luckyRenderer.setSize(w, h);
+            luckyRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            sphereWrap.innerHTML = '';
+            sphereWrap.appendChild(luckyRenderer.domElement);
+
+            // Lighting
+            const amb = new THREE.AmbientLight(0xffffff, 0.7);
+            luckyScene.add(amb);
+
+            coreLight = new THREE.PointLight(0x38bdf8, 2.2, 8);
+            coreLight.position.set(0, 0, 0);
+            luckyScene.add(coreLight);
+
+            const goldLight = new THREE.PointLight(0xf59e0b, 1.8, 8);
+            goldLight.position.set(2, 2, 2.5);
+            luckyScene.add(goldLight);
+
+            // Group
+            sphereCage = new THREE.Group();
+            luckyScene.add(sphereCage);
+
+            // 1. Geodesic Wireframe Sphere
+            const sphereGeo = new THREE.IcosahedronGeometry(1.35, 2);
+            const sphereMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.32
+            });
+            const outerMesh = new THREE.Mesh(sphereGeo, sphereMat);
+            sphereCage.add(outerMesh);
+
+            // 2. Orbital Torus Rings
+            const ringGeo = new THREE.TorusGeometry(1.58, 0.02, 16, 64);
+            const ringMat1 = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.2 });
+            ringGold = new THREE.Mesh(ringGeo, ringMat1);
+            ringGold.rotation.x = Math.PI / 4;
+            sphereCage.add(ringGold);
+
+            const ringMat2 = new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.85, roughness: 0.2 });
+            ringEmerald = new THREE.Mesh(ringGeo, ringMat2);
+            ringEmerald.rotation.y = Math.PI / 3;
+            sphereCage.add(ringEmerald);
+
+            // 3. Floating Lottery Balls inside Cage
+            balls = [];
+            const ballColors = [0xf59e0b, 0x10b981, 0x38bdf8, 0xef4444, 0x8b5cf6, 0xffffff];
+            const ballGeo = new THREE.SphereGeometry(0.12, 16, 16);
+            for (let i = 0; i < 18; i++) {
+                const bMat = new THREE.MeshStandardMaterial({
+                    color: ballColors[i % ballColors.length],
+                    metalness: 0.7,
+                    roughness: 0.25
+                });
+                const bMesh = new THREE.Mesh(ballGeo, bMat);
+                const rad = 0.2 + Math.random() * 0.8;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                bMesh.position.set(
+                    rad * Math.sin(phi) * Math.cos(theta),
+                    rad * Math.sin(phi) * Math.sin(theta),
+                    rad * Math.cos(phi)
+                );
+                bMesh.userData = {
+                    vel: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.025,
+                        (Math.random() - 0.5) * 0.025,
+                        (Math.random() - 0.5) * 0.025
+                    )
+                };
+                sphereCage.add(bMesh);
+                balls.push(bMesh);
+            }
+
+            // 4. Golden Winner Orb (in center)
+            const winGeo = new THREE.SphereGeometry(0.24, 24, 24);
+            const winMat = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                metalness: 0.95,
+                roughness: 0.15,
+                emissive: 0xb45309,
+                emissiveIntensity: 0.35
+            });
+            winnerOrb = new THREE.Mesh(winGeo, winMat);
+            winnerOrb.position.set(0, 0, 0);
+            sphereCage.add(winnerOrb);
+
+            is3DActive = true;
+            animate3DSphere();
+        }
+
+        function animate3DSphere() {
+            if (!is3DActive) return;
+            luckyAnimId = requestAnimationFrame(animate3DSphere);
+
+            spinSpeedFactor += (targetSpinSpeed - spinSpeedFactor) * 0.08;
+
+            sphereCage.rotation.y += 0.012 * spinSpeedFactor;
+            sphereCage.rotation.x += 0.006 * spinSpeedFactor;
+            ringGold.rotation.z += 0.015 * spinSpeedFactor;
+            ringEmerald.rotation.x -= 0.018 * spinSpeedFactor;
+
+            const maxR = 1.05;
+            balls.forEach(b => {
+                b.position.addScaledVector(b.userData.vel, spinSpeedFactor);
+                if (b.position.length() > maxR) {
+                    b.userData.vel.negate();
+                }
+            });
+
+            if (isSpinning) {
+                winnerOrb.scale.set(0.65, 0.65, 0.65);
+                coreLight.intensity = 2.5 + Math.sin(Date.now() * 0.02) * 1.5;
+            } else {
+                coreLight.intensity = 1.8;
+            }
+
+            luckyRenderer.render(luckyScene, luckyCamera);
+        }
+
+        window.set3DSpinSpeed = function(speed, isWinnerLocked) {
+            targetSpinSpeed = speed;
+            if (isWinnerLocked && winnerOrb) {
+                // Zoom golden orb to screen
+                winnerOrb.scale.set(1.4, 1.4, 1.4);
+                winnerOrb.position.set(0, 0, 0.85);
+                setTimeout(() => {
+                    winnerOrb.scale.set(1.0, 1.0, 1.0);
+                    winnerOrb.position.set(0, 0, 0);
+                }, 2200);
+            }
+        };
+
+        // Modal lifecycle handlers
+        $('#modalLuckyDraw').on('shown.bs.modal', function() {
+            if (!luckyScene) {
+                init3DLuckySphere();
+            } else {
+                is3DActive = true;
+                animate3DSphere();
+            }
+        });
+        $('#modalLuckyDraw').on('hidden.bs.modal', function() {
+            is3DActive = false;
+            if (luckyAnimId) cancelAnimationFrame(luckyAnimId);
+        });
+
         btnStartDraw.addEventListener('click', function() {
             if (isSpinning) return;
 
@@ -348,6 +518,9 @@
             btnStartDraw.disabled = true;
             btnCloseLuckyModal.disabled = true;
             confettiCanvas.style.display = 'none';
+
+            // Accelerate 3D Sphere spin
+            if (window.set3DSpinSpeed) window.set3DSpinSpeed(8.5);
 
             let speed = 40;
             let elapsed = 0;
@@ -382,6 +555,9 @@
             btnStartDraw.disabled = false;
             btnCloseLuckyModal.disabled = false;
             updateAvailableBadge();
+
+            // Decelerate 3D Sphere and pulse golden winner orb
+            if (window.set3DSpinSpeed) window.set3DSpinSpeed(1.0, true);
 
             runConfetti();
 

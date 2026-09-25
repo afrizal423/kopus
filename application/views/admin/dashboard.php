@@ -10,6 +10,85 @@
     <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/three/three.min.js'); ?>"></script>
+    <style>
+        /* 3D Quick Count Fullscreen Presentation Mode */
+        #quickCount3dContainer:fullscreen,
+        #quickCount3dContainer:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            margin: 0 !important;
+            padding: 1.25rem 2rem !important;
+            border-radius: 0 !important;
+            border: none !important;
+            background: #080d1a !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+        }
+
+        #quickCount3dContainer.is-fullscreen-fallback {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            margin: 0 !important;
+            padding: 1.25rem 2rem !important;
+            border-radius: 0 !important;
+            border: none !important;
+            background: #080d1a !important;
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 999999 !important;
+            box-sizing: border-box !important;
+        }
+
+        #quickCount3dContainer:fullscreen .border-bottom,
+        #quickCount3dContainer:-webkit-full-screen .border-bottom,
+        #quickCount3dContainer.is-fullscreen-fallback .border-bottom {
+            border-color: #1e293b !important;
+        }
+
+        #quickCount3dContainer:fullscreen .text-dark,
+        #quickCount3dContainer:-webkit-full-screen .text-dark,
+        #quickCount3dContainer.is-fullscreen-fallback .text-dark {
+            color: #f8fafc !important;
+        }
+
+        #quickCount3dContainer:fullscreen .text-muted,
+        #quickCount3dContainer:-webkit-full-screen .text-muted,
+        #quickCount3dContainer.is-fullscreen-fallback .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        #quickCount3dContainer:fullscreen .btn-outline-secondary,
+        #quickCount3dContainer:-webkit-full-screen .btn-outline-secondary,
+        #quickCount3dContainer.is-fullscreen-fallback .btn-outline-secondary {
+            color: #e2e8f0 !important;
+            border-color: #334155 !important;
+            background-color: rgba(30, 41, 59, 0.6) !important;
+        }
+        #quickCount3dContainer:fullscreen .btn-outline-secondary:hover,
+        #quickCount3dContainer:-webkit-full-screen .btn-outline-secondary:hover,
+        #quickCount3dContainer.is-fullscreen-fallback .btn-outline-secondary:hover {
+            background-color: #334155 !important;
+            color: #fff !important;
+        }
+
+        #quickCount3dContainer:fullscreen #quickCountStageWrapper,
+        #quickCount3dContainer:-webkit-full-screen #quickCountStageWrapper,
+        #quickCount3dContainer.is-fullscreen-fallback #quickCountStageWrapper {
+            flex: 1 1 auto !important;
+            height: 100% !important;
+            min-height: 0 !important;
+            border-color: #1e293b !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -212,6 +291,72 @@
                                 <span class="fs-3 fw-bold text-primary"><?= number_format($stats['total_votes_recorded']); ?></span>
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Kriptografis</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Live Quick Count Pillars (Cylinders) -->
+                <div class="admin-card mb-4" id="quickCount3dContainer">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle p-2 rounded-3">
+                                <i class="fas fa-cubes fs-5"></i>
+                            </span>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">Visualisasi 3D Live Quick Count: Pilar Perolehan Suara</h6>
+                                <small class="text-muted">Grafik pilar 3D interaktif real-time untuk penayangan hasil di aula atau layar utama</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Category Switcher Pills -->
+                            <div class="btn-group btn-group-sm" role="group" id="pillarCategoryToggle">
+                                <button type="button" class="btn btn-outline-success active fw-semibold" data-category="ketua">
+                                    <i class="fas fa-user-tie me-1"></i> Calon Ketua
+                                </button>
+                                <button type="button" class="btn btn-outline-primary fw-semibold" data-category="pengawas">
+                                    <i class="fas fa-shield-alt me-1"></i> Calon Pengawas
+                                </button>
+                            </div>
+
+                            <!-- Zoom Controls -->
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary" id="btnZoomIn3D" title="Perbesar (Zoom In)">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnZoomOut3D" title="Perkecil (Zoom Out)">
+                                    <i class="fas fa-search-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnResetView3D" title="Reset Sudut &amp; Zoom">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </div>
+
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="btnToggle3DOrbit" title="Jeda / Lanjutkan Putaran Otomatis">
+                                <i class="fas fa-sync-alt" id="orbitIcon"></i> <span class="d-none d-md-inline ms-1">Auto Orbit</span>
+                            </button>
+
+                            <!-- Fullscreen Presentation Button -->
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="btnToggle3DFullscreen" title="Tampilkan Layar Penuh (Proyektor / TV)">
+                                <i class="fas fa-expand" id="fullscreenIcon"></i> <span class="d-none d-md-inline ms-1" id="fullscreenText">Fullscreen</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3D Stadium Stage Container -->
+                    <div id="quickCountStageWrapper" class="position-relative rounded-3 overflow-hidden border" style="background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%); height: 350px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                        <div id="quickCount3dCanvas" style="width: 100%; height: 100%; cursor: grab;" title="Klik dua kali untuk Layar Penuh"></div>
+                        
+                        <!-- Floating Category & Leader Badge -->
+                        <div class="position-absolute top-0 start-0 p-3 pointer-events-none" style="z-index: 5;">
+                            <span class="badge bg-dark bg-opacity-75 border border-secondary text-warning fw-bold px-3 py-2" id="pillarStageBadge">
+                                <i class="fas fa-crown me-1"></i> Memuat Pilar Suara...
+                            </span>
+                        </div>
+
+                        <!-- Stage Controls Hint -->
+                        <div class="position-absolute bottom-0 end-0 p-2 text-white-50 small user-select-none pointer-events-none" style="font-size: 0.74rem; z-index: 5;">
+                            <i class="fas fa-search-plus me-1 text-info"></i> Scroll untuk Zoom • Geser 360° • Dobel-klik / tombol untuk Fullscreen
                         </div>
                     </div>
                 </div>
@@ -544,6 +689,540 @@ UPDATE election_settings SET setting_value = 'open' WHERE setting_key = 'electio
             settingsModal.show();
         });
     });
+    </script>
+
+    <!-- Three.js 3D Live Quick Count Pillars Controller (Tablet-Optimized) -->
+    <script>
+    (function() {
+        const stageWrap = document.getElementById('quickCount3dCanvas');
+        if (!window.THREE || !stageWrap) return;
+
+        const countStats = {
+            ketua: <?= json_encode($stats['results']['ketua']['candidates'] ?? []); ?>,
+            pengawas: <?= json_encode($stats['results']['pengawas']['candidates'] ?? []); ?>
+        };
+
+        let currentCat = 'ketua';
+        let scene, camera, renderer, animId;
+        let stageGroup, platformMesh, pillarGroup;
+        let pillars = [];
+        let isOrbitActive = true;
+        let orbitAngle = 0;
+        let userYaw = 0, isDragging = false, lastMouseX = 0;
+        let isVisibleOnScreen = true;
+
+        // Zoom & Camera state
+        let targetCamDist = 5.2;
+        let currentCamDist = 5.2;
+        const minCamDist = 3.2;
+        const maxCamDist = 8.5;
+        let userPitch = 0;
+        let targetUserPitch = 0;
+
+        const stageBadge = document.getElementById('pillarStageBadge');
+        const btnOrbit = document.getElementById('btnToggle3DOrbit');
+        const orbitIcon = document.getElementById('orbitIcon');
+
+        function initScene() {
+            const w = stageWrap.clientWidth || 800;
+            const h = stageWrap.clientHeight || 350;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a); // Deep Navy Slate
+
+            camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
+            camera.position.set(0, 2.5, currentCamDist);
+            camera.lookAt(0, 0.95, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.08;
+            stageWrap.innerHTML = '';
+            stageWrap.appendChild(renderer.domElement);
+
+            // Lighting
+            const amb = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(amb);
+
+            const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+            keyLight.position.set(5, 9, 6);
+            scene.add(keyLight);
+
+            const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.45);
+            fillLight.position.set(-5, 6, -4);
+            scene.add(fillLight);
+
+            // Stage Root Group
+            stageGroup = new THREE.Group();
+            scene.add(stageGroup);
+
+            // Circular Platform Pedestal
+            const platGeo = new THREE.CylinderGeometry(3.6, 3.8, 0.15, 48);
+            const platMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                roughness: 0.35,
+                metalness: 0.6
+            });
+            platformMesh = new THREE.Mesh(platGeo, platMat);
+            platformMesh.position.y = -0.08;
+            stageGroup.add(platformMesh);
+
+            // Grid Rings on Platform
+            const ringGeo = new THREE.RingGeometry(2.4, 2.44, 48);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x334155, side: THREE.DoubleSide });
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            ringMesh.rotation.x = Math.PI / 2;
+            ringMesh.position.y = 0.005;
+            stageGroup.add(ringMesh);
+
+            // Pillar Container Group
+            pillarGroup = new THREE.Group();
+            stageGroup.add(pillarGroup);
+
+            setupInteraction();
+            rebuildPillars(currentCat);
+            animate();
+        }
+
+        // High-DPI 512x256 Crisp Billboard Text Texture
+        function createTextTexture(name, percentage, isLeader, num, voteCount) {
+            const cv = document.createElement('canvas');
+            cv.width = 512;
+            cv.height = 256;
+            const ctx = cv.getContext('2d');
+
+            // Card background box with glowing border
+            ctx.fillStyle = isLeader ? 'rgba(6, 78, 59, 0.96)' : 'rgba(15, 23, 42, 0.94)';
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(10, 10, 492, 236, 22) : ctx.rect(10, 10, 492, 236);
+            ctx.fill();
+            ctx.lineWidth = isLeader ? 6 : 3;
+            ctx.strokeStyle = isLeader ? '#f59e0b' : '#38bdf8';
+            ctx.stroke();
+
+            // Candidate number badge pill (top-left)
+            ctx.fillStyle = isLeader ? '#f59e0b' : '#0284c7';
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(24, 24, 82, 48, 12) : ctx.rect(24, 24, 82, 48);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 30px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('#' + num, 65, 58);
+
+            // Percentage Big Bold Text (top-right)
+            ctx.fillStyle = isLeader ? '#fef08a' : '#ffffff';
+            ctx.font = 'bold 52px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(percentage, 480, 64);
+
+            // Candidate Name (Bold, bright & large)
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 34px sans-serif';
+            ctx.textAlign = 'left';
+            let shortName = name;
+            if (shortName.length > 21) shortName = shortName.substring(0, 19) + '...';
+            ctx.fillText(shortName, 26, 136);
+
+            // Bottom Ribbon: Vote Count
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(24, 162, 464, 56, 12) : ctx.rect(24, 162, 464, 56);
+            ctx.fill();
+            ctx.fillStyle = isLeader ? '#34d399' : '#94a3b8';
+            ctx.font = 'bold 24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(voteCount + ' SUARA TERCATAT', 256, 198);
+
+            return new THREE.CanvasTexture(cv);
+        }
+
+        function rebuildPillars(cat) {
+            while(pillarGroup.children.length > 0) {
+                const obj = pillarGroup.children[0];
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+                    else obj.material.dispose();
+                }
+                pillarGroup.remove(obj);
+            }
+            pillars = [];
+
+            const candidates = countStats[cat] || [];
+            if (candidates.length === 0) {
+                if (stageBadge) stageBadge.innerHTML = '<i class="fas fa-info-circle me-1"></i> Belum ada data calon';
+                return;
+            }
+
+            // Find leader
+            let maxVotes = 0;
+            let leader = candidates[0];
+            candidates.forEach(c => {
+                const votes = parseInt(c.vote_count) || 0;
+                if (votes > maxVotes) {
+                    maxVotes = votes;
+                    leader = c;
+                }
+            });
+
+            if (stageBadge) {
+                const catLabel = (cat === 'ketua') ? 'Ketua' : 'Pengawas';
+                if (maxVotes > 0) {
+                    stageBadge.innerHTML = `<i class="fas fa-crown text-warning me-1"></i> Unggul ${catLabel}: <strong>${leader.name}</strong> (${leader.vote_count} suara / ${leader.percentage}%)`;
+                } else {
+                    stageBadge.innerHTML = `<i class="fas fa-cubes text-info me-1"></i> Rekapitulasi: Calon ${catLabel} (Menunggu Suara Masuk)`;
+                }
+            }
+
+            const n = candidates.length;
+            const spacing = n <= 3 ? 1.75 : 1.4;
+            const pillarRadius = n <= 3 ? 0.46 : 0.38;
+
+            candidates.forEach((c, idx) => {
+                const xPos = (idx - (n - 1) / 2) * spacing;
+                const voteCount = parseInt(c.vote_count) || 0;
+                const isLeader = (voteCount > 0 && c.id === leader.id);
+
+                // Cylinder with bottom pivot
+                const cylGeo = new THREE.CylinderGeometry(pillarRadius, pillarRadius, 1, 24);
+                cylGeo.translate(0, 0.5, 0);
+
+                const baseColor = (cat === 'ketua') ? 0x059669 : 0x2563eb;
+                const leaderColor = (cat === 'ketua') ? 0x10b981 : 0x0284c7;
+                const cylMat = new THREE.MeshStandardMaterial({
+                    color: isLeader ? leaderColor : baseColor,
+                    metalness: 0.75,
+                    roughness: 0.25
+                });
+
+                const pMesh = new THREE.Mesh(cylGeo, cylMat);
+                pMesh.position.set(xPos, 0, 0);
+                pMesh.scale.set(1, 0.05, 1);
+                pillarGroup.add(pMesh);
+
+                // Golden Ring Trim for Leader
+                let crownRing = null;
+                if (isLeader) {
+                    const cRingGeo = new THREE.TorusGeometry(pillarRadius + 0.04, 0.025, 16, 32);
+                    const cRingMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 });
+                    crownRing = new THREE.Mesh(cRingGeo, cRingMat);
+                    crownRing.rotation.x = Math.PI / 2;
+                    pillarGroup.add(crownRing);
+                }
+
+                // Top Floating Info Disc/Badge (Large & crisp 1.65 x 0.85)
+                const labelTex = createTextTexture(c.name, c.percentage + '%', isLeader, c.candidate_number, voteCount);
+                const labelGeo = new THREE.PlaneGeometry(1.65, 0.85);
+                const labelMat = new THREE.MeshBasicMaterial({ map: labelTex, transparent: true });
+                const labelMesh = new THREE.Mesh(labelGeo, labelMat);
+                labelMesh.position.set(xPos, 0.52, 0);
+                pillarGroup.add(labelMesh);
+
+                // Calculate visual target height: min 0.35, max 2.2
+                let targetH = 0.35;
+                if (maxVotes > 0) {
+                    targetH = 0.35 + (voteCount / maxVotes) * 1.8;
+                }
+
+                pillars.push({
+                    mesh: pMesh,
+                    crownRing: crownRing,
+                    label: labelMesh,
+                    targetHeight: targetH,
+                    x: xPos
+                });
+            });
+        }
+
+        function setupInteraction() {
+            const el = stageWrap;
+            let lastMouseY = 0;
+
+            const onDown = (clientX, clientY) => {
+                isDragging = true;
+                lastMouseX = clientX;
+                lastMouseY = clientY;
+            };
+            const onMove = (clientX, clientY) => {
+                if (!isDragging) return;
+                const deltaX = clientX - lastMouseX;
+                const deltaY = clientY - lastMouseY;
+                lastMouseX = clientX;
+                lastMouseY = clientY;
+
+                userYaw += deltaX * 0.008;
+                targetUserPitch = Math.max(-0.4, Math.min(0.65, targetUserPitch + deltaY * 0.005));
+            };
+            const onUp = () => { isDragging = false; };
+
+            el.addEventListener('mousedown', (e) => onDown(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', onUp);
+
+            // Touch Drag & Pinch-to-Zoom
+            let initialPinchDist = null;
+            let initialCamDist = targetCamDist;
+
+            el.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    onDown(e.touches[0].clientX, e.touches[0].clientY);
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    initialPinchDist = Math.hypot(dx, dy);
+                    initialCamDist = targetCamDist;
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging) {
+                    onMove(e.touches[0].clientX, e.touches[0].clientY);
+                } else if (e.touches.length === 2 && initialPinchDist) {
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    const currentDist = Math.hypot(dx, dy);
+                    const factor = initialPinchDist / Math.max(10, currentDist);
+                    targetCamDist = Math.max(minCamDist, Math.min(maxCamDist, initialCamDist * factor));
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                onUp();
+                initialPinchDist = null;
+            });
+
+            // Mouse Wheel Zoom
+            el.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.45 : -0.45;
+                targetCamDist = Math.max(minCamDist, Math.min(maxCamDist, targetCamDist + delta));
+            }, { passive: false });
+
+            // Toolbar Zoom Buttons
+            $('#btnZoomIn3D').on('click', function() {
+                targetCamDist = Math.max(minCamDist, targetCamDist - 0.7);
+            });
+            $('#btnZoomOut3D').on('click', function() {
+                targetCamDist = Math.min(maxCamDist, targetCamDist + 0.7);
+            });
+            $('#btnResetView3D').on('click', function() {
+                targetCamDist = 5.2;
+                targetUserPitch = 0;
+                userYaw = 0;
+                orbitAngle = 0;
+            });
+
+            // Orbit Toggle Button
+            if (btnOrbit) {
+                btnOrbit.addEventListener('click', function() {
+                    isOrbitActive = !isOrbitActive;
+                    if (isOrbitActive) {
+                        btnOrbit.classList.add('active');
+                        orbitIcon.className = 'fas fa-sync-alt fa-spin';
+                    } else {
+                        btnOrbit.classList.remove('active');
+                        orbitIcon.className = 'fas fa-pause';
+                    }
+                });
+            }
+
+            // Category switcher pills
+            $('#pillarCategoryToggle button').on('click', function() {
+                $('#pillarCategoryToggle button').removeClass('active');
+                $(this).addClass('active');
+                currentCat = $(this).data('category');
+                rebuildPillars(currentCat);
+            });
+
+            // Window resize & canvas sync
+            function resizeStage() {
+                if (!stageWrap || !renderer || !camera) return;
+                const nw = stageWrap.clientWidth;
+                const nh = stageWrap.clientHeight;
+                if (nw > 0 && nh > 0) {
+                    camera.aspect = nw / nh;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(nw, nh);
+                }
+            }
+
+            window.addEventListener('resize', resizeStage);
+
+            // Fullscreen Presentation Mode Logic
+            const container3D = document.getElementById('quickCount3dContainer');
+            const btnFs = document.getElementById('btnToggle3DFullscreen');
+            const fsIcon = document.getElementById('fullscreenIcon');
+            const fsText = document.getElementById('fullscreenText');
+
+            function syncFullscreenUI() {
+                const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || (container3D && container3D.classList.contains('is-fullscreen-fallback')));
+                if (fsIcon) {
+                    fsIcon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
+                }
+                if (fsText) {
+                    fsText.textContent = isFs ? 'Keluar Layar Penuh' : 'Fullscreen';
+                }
+                if (btnFs) {
+                    if (isFs) {
+                        btnFs.classList.add('btn-warning');
+                        btnFs.classList.remove('btn-outline-secondary');
+                        btnFs.title = 'Keluar dari Mode Layar Penuh (Esc)';
+                    } else {
+                        btnFs.classList.remove('btn-warning');
+                        btnFs.classList.add('btn-outline-secondary');
+                        btnFs.title = 'Tampilkan Layar Penuh (Proyektor / TV)';
+                    }
+                }
+                // Multiple passes to accommodate CSS animation and viewport adjustment
+                resizeStage();
+                setTimeout(resizeStage, 50);
+                setTimeout(resizeStage, 150);
+                setTimeout(resizeStage, 300);
+            }
+
+            function toggleFullscreen() {
+                if (!container3D) return;
+                const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || container3D.classList.contains('is-fullscreen-fallback'));
+
+                if (!isFs) {
+                    let entered = false;
+                    try {
+                        let p = null;
+                        if (container3D.requestFullscreen) {
+                            p = container3D.requestFullscreen();
+                        } else if (container3D.webkitRequestFullscreen) {
+                            p = container3D.webkitRequestFullscreen();
+                        }
+
+                        if (p && typeof p.then === 'function') {
+                            p.then(() => {
+                                syncFullscreenUI();
+                            }).catch(() => {
+                                container3D.classList.add('is-fullscreen-fallback');
+                                syncFullscreenUI();
+                            });
+                            entered = true;
+                        } else if (p !== null && p !== undefined) {
+                            entered = true;
+                        }
+                    } catch (err) {
+                        entered = false;
+                    }
+
+                    if (!entered) {
+                        container3D.classList.add('is-fullscreen-fallback');
+                        syncFullscreenUI();
+                    }
+                } else {
+                    if (document.fullscreenElement || document.webkitFullscreenElement) {
+                        if (document.exitFullscreen) {
+                            try { document.exitFullscreen(); } catch (e) {}
+                        } else if (document.webkitExitFullscreen) {
+                            try { document.webkitExitFullscreen(); } catch (e) {}
+                        }
+                    }
+                    container3D.classList.remove('is-fullscreen-fallback');
+                    syncFullscreenUI();
+                }
+            }
+
+            if (btnFs) {
+                btnFs.addEventListener('click', toggleFullscreen);
+            }
+
+            // Double click canvas to toggle Fullscreen
+            stageWrap.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                toggleFullscreen();
+            });
+
+            // Native fullscreen change and error events
+            document.addEventListener('fullscreenchange', syncFullscreenUI);
+            document.addEventListener('webkitfullscreenchange', syncFullscreenUI);
+
+            document.addEventListener('fullscreenerror', function() {
+                if (container3D && !document.fullscreenElement) {
+                    container3D.classList.add('is-fullscreen-fallback');
+                    syncFullscreenUI();
+                }
+            });
+            document.addEventListener('webkitfullscreenerror', function() {
+                if (container3D && !document.webkitFullscreenElement) {
+                    container3D.classList.add('is-fullscreen-fallback');
+                    syncFullscreenUI();
+                }
+            });
+
+            // Escape key support for CSS fallback
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && container3D && container3D.classList.contains('is-fullscreen-fallback')) {
+                    container3D.classList.remove('is-fullscreen-fallback');
+                    syncFullscreenUI();
+                }
+            });
+        }
+
+        function animate() {
+            animId = requestAnimationFrame(animate);
+
+            if (!isVisibleOnScreen) return; // Battery & GPU safeguard
+
+            // Smooth Zoom & Pitch Interpolation
+            currentCamDist += (targetCamDist - currentCamDist) * 0.1;
+            userPitch += (targetUserPitch - userPitch) * 0.1;
+
+            // Grow pillars smoothly to target height
+            pillars.forEach(p => {
+                p.mesh.scale.y += (p.targetHeight - p.mesh.scale.y) * 0.07;
+                const currentH = p.mesh.scale.y;
+
+                // Move label disc above pillar
+                p.label.position.y = currentH + 0.52;
+                p.label.quaternion.copy(camera.quaternion); // Always face camera
+
+                if (p.crownRing) {
+                    p.crownRing.position.set(p.x, currentH + 0.02, 0);
+                    p.crownRing.rotation.z += 0.02;
+                }
+            });
+
+            // Orbit & user rotation
+            if (isOrbitActive && !isDragging) {
+                orbitAngle += 0.0035;
+            }
+            if (!isDragging) {
+                userYaw *= 0.94;
+            }
+
+            const effAngle = orbitAngle + userYaw;
+            camera.position.x = Math.sin(effAngle) * currentCamDist;
+            camera.position.z = Math.cos(effAngle) * currentCamDist;
+            camera.position.y = (currentCamDist * 0.44) + 0.35 + userPitch * 2.2;
+            camera.lookAt(0, 0.95, 0);
+
+            renderer.render(scene, camera);
+        }
+
+        // Tablet performance safeguards
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    isVisibleOnScreen = entry.isIntersecting;
+                });
+            }, { threshold: 0.1 });
+            observer.observe(stageWrap);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            isVisibleOnScreen = !document.hidden;
+        });
+
+        initScene();
+    })();
     </script>
     <?php $this->load->view('admin/modal_change_password', array('current_page' => 'admin')); ?>
 </body>
