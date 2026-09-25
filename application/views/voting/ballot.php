@@ -752,8 +752,10 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
             // Trigger slider centering check on tab display
             setTimeout(checkCentering, 50);
 
-            // Scroll window to top of ballot smoothly
-            window.scrollTo({ top: 120, behavior: 'smooth' });
+            // Scroll directly to the active candidate container
+            setTimeout(function() {
+                scrollToActiveStep(true);
+            }, 30);
 
             syncUI();
         }
@@ -1099,8 +1101,33 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
             });
         }
 
+        function scrollToActiveStep(smooth = true) {
+            const $target = $(`#wizardStep${currentStep}`);
+            if ($target.length) {
+                const headerHeight = $('.ballot-header').outerHeight() || 72;
+                const targetTop = Math.max(0, $target.offset().top - headerHeight - 12);
+                window.scrollTo({
+                    top: targetTop,
+                    behavior: smooth ? 'smooth' : 'auto'
+                });
+            }
+        }
+
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
         // Initialize state
         syncUI();
+
+        // Direct view focus to candidates list without manual scroll
+        setTimeout(function() { scrollToActiveStep(false); }, 40);
+        setTimeout(function() { scrollToActiveStep(false); }, 150);
+        setTimeout(function() { scrollToActiveStep(false); }, 400);
+
+        $(window).on('load', function() {
+            scrollToActiveStep(false);
+        });
     });
     </script>
 </body>
