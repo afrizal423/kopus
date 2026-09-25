@@ -58,22 +58,27 @@ CREATE TABLE `candidates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ---------------------------------------------------------------------
--- Tabel: votes (Ledger Suara Kriptografis & Anonim)
--- Anonim (tanpa voter_id) & Anti-Tamper (Hash Chaining HMAC SHA-256)
+-- Tabel: votes (Ledger Suara Kriptografis & Audit Trail)
+-- Anti-Tamper (Hash Chaining HMAC SHA-256) & Relasi Audit Pemilih
 -- ---------------------------------------------------------------------
 CREATE TABLE `votes` (
   `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `candidate_id`  INT UNSIGNED    NOT NULL,
+  `voter_id`      INT UNSIGNED    NULL DEFAULT NULL COMMENT 'ID pemilih untuk keperluan audit resmi',
   `previous_hash` VARCHAR(64)     NOT NULL DEFAULT '0000000000000000000000000000000000000000000000000000000000000000',
   `vote_hash`     VARCHAR(64)     NOT NULL DEFAULT '',
   `receipt_token` VARCHAR(32)     NOT NULL DEFAULT '',
   `created_at`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_votes_candidate` (`candidate_id`),
+  KEY `idx_votes_voter` (`voter_id`),
   KEY `idx_votes_created` (`created_at`),
   CONSTRAINT `fk_votes_candidate_id`
     FOREIGN KEY (`candidate_id`) REFERENCES `candidates` (`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_votes_voter_id`
+    FOREIGN KEY (`voter_id`) REFERENCES `voters` (`id`)
+    ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ---------------------------------------------------------------------

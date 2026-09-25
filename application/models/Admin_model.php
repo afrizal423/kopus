@@ -218,4 +218,124 @@ class Admin_model extends CI_Model {
             array($new_hash, (int)$id)
         );
     }
+
+    public function get_turnout_stats() {
+        $total_voters  = (int)$this->db->query("SELECT COUNT(*) AS total FROM voters")->row()->total;
+        $voted_count   = (int)$this->db->query("SELECT COUNT(*) AS total FROM voters WHERE has_voted = 1")->row()->total;
+        $unvoted_count = $total_voters - $voted_count;
+        $voted_pct     = ($total_voters > 0) ? round(($voted_count / $total_voters) * 100, 1) : 0;
+        $unvoted_pct   = ($total_voters > 0) ? round(($unvoted_count / $total_voters) * 100, 1) : 0;
+
+        $hourly = $this->db->query(
+            "SELECT DATE_FORMAT(voted_at, '%H:00') AS time_slot, COUNT(*) AS count 
+             FROM voters 
+             WHERE has_voted = 1 AND voted_at IS NOT NULL 
+             GROUP BY DATE_FORMAT(voted_at, '%H:00') 
+             ORDER BY time_slot ASC"
+        )->result_array();
+
+        return array(
+            'total_voters'  => $total_voters,
+            'voted_count'   => $voted_count,
+            'unvoted_count' => $unvoted_count,
+            'voted_pct'     => $voted_pct,
+            'unvoted_pct'   => $unvoted_pct,
+            'hourly'        => $hourly
+        );
+    }
+
+    public function get_unvoted_voters($search = '') {
+        $clean = trim((string)$search);
+        if (!empty($clean)) {
+            $q = $this->db->query(
+                "SELECT id, member_number, name, status, created_at 
+                 FROM voters 
+                 WHERE has_voted = 0 AND (name LIKE ? OR member_number LIKE ?) 
+                 ORDER BY member_number ASC",
+                array('%' . $clean . '%', '%' . $clean . '%')
+            );
+        } else {
+            $q = $this->db->query(
+                "SELECT id, member_number, name, status, created_at 
+                 FROM voters 
+                 WHERE has_voted = 0 
+                 ORDER BY member_number ASC"
+            );
+        }
+        return $q->result_array();
+    }
+
+    public function get_candidate_voters($candidate_id) {
+        $q = $this->db->query(
+            "SELECT v.id AS vote_id, v.created_at AS voted_at, v.receipt_token,
+                    vt.id AS voter_id, vt.member_number, vt.name AS voter_name
+             FROM votes v
+             LEFT JOIN voters vt ON vt.id = v.voter_id
+             WHERE v.candidate_id = ?
+             ORDER BY v.created_at ASC, v.id ASC",
+            array((int)$candidate_id)
+        );
+        return $q->result_array();
+    }
+
+    public function get_voter_ballot_history($search = '') {
+        $clean = trim((string)$search);
+        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.name AS voter_name, vt.voted_at,
+                       v.id AS vote_id, v.receipt_token, v.vote_hash,
+                       c.id AS candidate_id, c.name AS candidate_name, c.category, c.candidate_number
+                FROM voters vt
+                JOIN votes v ON v.voter_id = vt.id
+                JOIN candidates c ON c.id = v.candidate_id";
+
+        if (!empty($clean)) {
+            $sql .= " WHERE (vt.name LIKE ? OR vt.member_number LIKE ? OR v.receipt_token LIKE ?)";
+            $params = array('%' . $clean . '%', '%' . $clean . '%', '%' . $clean . '%');
+        } else {
+            $params = array();
+        }
+        $sql .= " ORDER BY vt.voted_at DESC, vt.id DESC, c.category DESC";
+
+        $rows = $this->db->query($sql, $params)->result_array();
+
+        $grouped = array();
+        foreach ($rows as $r) {
+            $vid = $r['voter_id'];
+            if (!isset($grouped[$vid])) {
+                $grouped[$vid] = array(
+                    'voter_id'      => $r['voter_id'],
+                    'member_number' => $r['member_number'],
+                    'voter_name'    => $r['voter_name'],
+                    'voted_at'      => $r['voted_at'],
+                    'receipt_token' => $r['receipt_token'],
+                    'votes'         => array()
+                );
+            }
+            $grouped[$vid]['votes'][$r['category']] = array(
+                'candidate_id'     => $r['candidate_id'],
+                'candidate_number' => $r['candidate_number'],
+                'candidate_name'   => $r['candidate_name'],
+                'category'         => $r['category']
+            );
+        }
+        return array_values($grouped);
+    }
+
+    public function get_doorprize_participants($search = '') {
+        $clean = trim((string)$search);
+        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.name AS voter_name, vt.voted_at,
+                       COALESCE((SELECT receipt_token FROM votes WHERE voter_id = vt.id LIMIT 1), CONCAT('KOP-', UPPER(SUBSTRING(MD5(vt.id), 1, 8)))) AS receipt_token
+                FROM voters vt
+                WHERE vt.has_voted = 1 AND vt.status = 'active'";
+
+        if (!empty($clean)) {
+            $sql .= " AND (vt.name LIKE ? OR vt.member_number LIKE ?)";
+            $params = array('%' . $clean . '%', '%' . $clean . '%');
+        } else {
+            $params = array();
+        }
+        $sql .= " ORDER BY vt.voted_at ASC, vt.id ASC";
+
+        return $this->db->query($sql, $params)->result_array();
+    }
 }
+

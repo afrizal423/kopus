@@ -99,8 +99,8 @@ class Voting_model extends CI_Model {
             $current_hash = hash_hmac('sha256', $prev_hash . '|' . $cid . '|' . $now . '|' . $receipt_token, $secret_salt);
 
             $this->db->query(
-                "INSERT INTO votes (candidate_id, previous_hash, vote_hash, receipt_token, created_at) VALUES (?, ?, ?, ?, ?)",
-                array($cid, $prev_hash, $current_hash, $receipt_token, $now)
+                "INSERT INTO votes (candidate_id, voter_id, previous_hash, vote_hash, receipt_token, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                array($cid, (int)$voter_id, $prev_hash, $current_hash, $receipt_token, $now)
             );
 
             $prev_hash = $current_hash;

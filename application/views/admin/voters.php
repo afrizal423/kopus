@@ -38,6 +38,18 @@
                         <i class="fas fa-id-card"></i>
                         <span>DPT &amp; Kartu RFID</span>
                     </a>
+                    <a href="<?= base_url('admin/report_turnout'); ?>">
+                        <i class="fas fa-user-check"></i>
+                        <span>Laporan Partisipasi</span>
+                    </a>
+                    <a href="<?= base_url('admin/audit_votes'); ?>">
+                        <i class="fas fa-history"></i>
+                        <span>Audit Jejak Suara</span>
+                    </a>
+                    <a href="<?= base_url('admin/doorprize'); ?>">
+                        <i class="fas fa-gift"></i>
+                        <span>Undian Doorprize</span>
+                    </a>
                     <a href="<?= base_url('admin/export_results'); ?>" target="_blank">
                         <i class="fas fa-file-signature"></i>
                         <span>Cetak Berita Acara</span>
