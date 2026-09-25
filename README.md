@@ -27,15 +27,27 @@ Sistem ini dikembangkan dengan arsitektur keamanan tingkat tinggi untuk beropera
 ## 1. Fitur Unggulan Sistem
 
 - **Bilik Suara Kiosk Layar Sentuh**: Antarmuka responsif ramah layar sentuh maupun keyboard/mouse dengan auto-focus tersembunyi pada reader RFID.
-- **Daftar Calon Horizontal (Ke Samping)**: Berapapun jumlah kandidat (2, 3, 4, dst.), susunan kartu calon selalu tertata rapi berjejer ke samping dalam satu baris dengan navigasi *horizontal scroll* yang halus.
+- **Fitur Aksesibilitas Web & Ramah Lansia (Web Accessibility Suite)**:
+  - **Tombol Melayang (FAB)**: Akses cepat fitur aksesibilitas dengan target sentuh ramah tablet/kiosk (`fas fa-universal-access`).
+  - **Text Resizer (Skala Font)**: 4 tingkat ukuran huruf (Standar 100%, Besar 114%, Ekstra 128%, dan Maksimal 142% untuk lansia).
+  - **Mode Kontras Tinggi**: Standar, Kontras Gelap (*Dark Mode* anti-silau), Kuning di atas Hitam (*WCAG AAA Ultra-High Contrast* untuk lansia & *low vision*), dan Monokrom (*Grayscale* untuk buta warna).
+  - **Alat Keterbacaan Tambahan**: Teks Ekstra Tebal (*Bold Font*), Jarak Baris Renggang (*Line Spacing*), dan Garis Pandu Baca (*Reading Guide Line*).
+  - **Sinkronisasi Otomatis Antar-Halaman**: Preferensi visual tersimpan di `localStorage` dan otomatis aktif saat berpindah dari bilik scan RFID ke surat suara (*Zero-Flicker Pre-render*).
+- **Alur Pemilihan Wizard Bertahap (Stepper Navigation & Direct View Focus)**:
+  - Alur 3 langkah terstruktur: **Langkah 1: Calon Ketua**, **Langkah 2: Calon Pengawas**, dan **Langkah 3: Tinjauan & Konfirmasi Pilihan Suara** berdampingan.
+  - Tampilan otomatis fokus langsung ke daftar calon saat halaman dimuat tanpa perlu menggulir (*scroll*) manual.
+  - Kartu kandidat tersusun rapi berjejer ke samping (*horizontal carousel*) dengan tombol geser lembut (*soft slider*).
+- **Visualisasi 3D Interaktif (Three.js Offline Intranet-First)**:
+  - **Pilar Silinder 3D Quick Count (Dashboard Panitia)**: Visualisasi perolehan suara 3D interaktif real-time dengan kontrol rotasi, Zoom In/Out, dan Mode Layar Penuh (*Fullscreen* untuk proyektor/layar controlling).
+  - **Kartu Anggota 3D Mengambang (*Floating Smartcard*)**: Animasi 3D interaktif pada kiosk standby bilik suara yang merespons sentuhan dan animasi tap RFID.
+- **Real-Time Live Polling Sync**: Dashboard panitia dan perolehan suara terbarui secara otomatis secara real-time tanpa perlu me-reload halaman browser.
 - **Pemisah & Diferensiasi Kategori Visual**:
   - Kolom **Ketua Koperasi**: Nuansa hijau zamrud (*Emerald Fresh*), border mint, dan tag nomor urut Amber Emas.
   - Kolom **Pengawas Koperasi**: Nuansa biru safir (*Azure Blue*), border biru, dan tag nomor urut Biru Safir.
-  - Pembatas vertikal tegas (*divider*) memisahkan kedua kategori pemilihan di layar desktop/kiosk.
 - **Countdown Timer Sesi Bilik Suara (120 Detik)**: Melindungi hak suara pemilih. Jika bilik suara ditinggalkan tanpa memilih, sesi otomatis dibatalkan (*auto-reset*) ke layar awal.
 - **Tanda Terima Digital Anonim (Audit Token)**: Pemilih mendapatkan kode acak tanda terima (contoh: `KOP-5EEA0142`) sebagai bukti bahwa hak suaranya sah tercatat tanpa membuka rahasia kandidat pilihannya.
 - **Portal Panitia & Pengawas Terpadu**:
-  - Monitoring Quick Count & Turnout DPT real-time.
+  - Monitoring Quick Count & Turnout DPT real-time dengan visualisasi pilar 3D.
   - Modul audit otomatis **"Uji Keutuhan Ledger"** (Verifikasi Integritas Database).
   - Manajemen Calon: Tambah, edit, upload foto, toggle aktif/nonaktif, dan proteksi hapus jika sudah ada suara masuk.
   - Manajemen DPT: Pencarian, pendaftaran kartu RFID baru via tap, blokir/unblock anggota, dan reset hak suara darurat.
@@ -96,6 +108,18 @@ Mengacu pada panduan keahlian `owasp-security-ci3`:
 - Dokumentasi kode yang ringkas dan terarah, berfokus pada logika keamanan, mitigasi *race condition*, dan integritas kriptografis.
 - Pemisahan berkas stylesheet (`koperasi.css`) untuk memudahkan kustomisasi tema identitas koperasi di kemudian hari.
 
+### C. Standar Aksesibilitas Web (Inklusif & Ramah Lansia)
+Khusus bilik suara kiosk ([`scanner.php`](application/views/voting/scanner.php) dan [`ballot.php`](application/views/voting/ballot.php)), sistem dilengkapi antarmuka aksesibilitas yang mematuhi prinsip kemudahan baca (*readability*):
+- **Universal Access FAB**: Tombol melayang di pojok kiri bawah dengan tinggi minimal 48px untuk kemudahan sentuhan jari pemilih di layar kiosk/tablet.
+- **Text Resizer**: Menyesuaikan skala tipografi seluruh halaman secara proporsional (Standar 100%, Besar 114%, Ekstra 128%, Maksimal 142% untuk lansia).
+- **Mode Kontras Layar**:
+  - *Standar*: Palet warna asli koperasi yang bersih dan profesional.
+  - *Kontras Gelap (Dark Mode)*: Mengurangi silau layar (*anti-glare*) dan kelelahan mata di bilik suara tertutup.
+  - *Kuning di atas Hitam (WCAG AAA)*: Standar aksesibilitas internasional dengan rasio kontras tinggi khusus pemilih lansia dan penderita *low vision*.
+  - *Monokrom (Grayscale)*: Menghilangkan spektrum warna untuk membantu pemilih dengan keterbatasan buta warna (*color blindness*).
+- **Alat Keterbacaan Ekstra**: Fitur penegas teks ekstra tebal (*bold font*), jarak spasi baris lebih renggang, dan garis sorot pemandu baca (*reading guide*).
+- **Sinkronisasi Sesi Lokal**: Preferensi pemilih disimpan di `localStorage` dan dimuat sebelum render HTML (*inline pre-render*) untuk menjamin pengalaman bebas kedipan visual (*zero-flicker*).
+
 ---
 
 ## 4. Struktur Modul & Halaman
@@ -103,8 +127,9 @@ Mengacu pada panduan keahlian `owasp-security-ci3`:
 ### Modul Pemilih (Bilik Suara Kiosk)
 | Rute URL | Tampilan | Fungsi |
 |---|---|---|
-| `/voting` | [scanner.php](application/views/voting/scanner.php) | Layar selamat datang, status sensor RFID, input trap otomatis |
-| `/voting/ballot` | [ballot.php](application/views/voting/ballot.php) | Surat suara digital Ketua & Pengawas (horizontal layout), modal visi misi, timer 120s |
+| `/voting` | [scanner.php](application/views/voting/scanner.php) | Layar selamat datang, animasi kartu RFID 3D Three.js, status sensor, input trap otomatis, FAB aksesibilitas |
+| `/voting/ballot` | [ballot.php](application/views/voting/ballot.php) | Surat suara digital Ketua & Pengawas (Wizard Stepper, horizontal carousel), modal visi misi kontras tinggi, timer 120s |
+| Komponen | [accessibility_widget.php](application/views/voting/accessibility_widget.php) | Widget Aksesibilitas Web (Text Resizer, High Contrast Dark/Yellow/Mono, Bold Font, Reading Guide) |
 | `/voting/success` | [success.php](application/views/voting/success.php) | Tanda terima audit token kriptografis dan hitung mundur reset otomatis |
 
 ### Modul Panitia & Pengawas
@@ -242,13 +267,15 @@ vote-koperasi/
 │       │   ├── login.php      # Form masuk panitia & pengawas
 │       │   └── voters.php     # Manajemen DPT & pendaftaran kartu RFID
 │       └── voting/
-│           ├── ballot.php     # Surat suara elektronik (horizontal candidate layout)
-│           ├── scanner.php    # Layar tap kartu RFID (kiosk terminal)
+│           ├── accessibility_widget.php # Widget Aksesibilitas Web (Text Resizer, High Contrast, Readability)
+│           ├── ballot.php     # Surat suara elektronik (Wizard Stepper, horizontal candidate layout)
+│           ├── scanner.php    # Layar tap kartu RFID (Three.js 3D Smartcard, kiosk terminal)
 │           └── success.php    # Layar tanda terima audit token kriptografis
 ├── assets/
 │   ├── css/
-│   │   └── koperasi.css       # Design System & tema antarmuka resmi KOPUS
+│   │   └── koperasi.css       # Design System, tema antarmuka & modul aksesibilitas KOPUS
 │   ├── foto/                  # Avatar vektor SVG calon default
+│   ├── vendor/                # Dependensi lokal intranet-first (Bootstrap, Three.js, FontAwesome, jQuery)
 │   └── uploads/candidates/    # Direktori penyimpanan unggahan foto calon
 ├── database/
 │   ├── apply_migration.php    # Script otomatisasi migrasi database CLI
