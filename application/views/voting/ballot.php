@@ -26,6 +26,22 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
     <link href="<?= base_url('assets/vendor/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome/css/all.min.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/koperasi.css?v=' . filemtime(FCPATH . 'assets/css/koperasi.css')); ?>">
+    <script>
+    (function() {
+        try {
+            var raw = localStorage.getItem('kopus_a11y_prefs');
+            if (raw) {
+                var p = JSON.parse(raw);
+                var el = document.documentElement;
+                if (p.fontSize) el.classList.add('a11y-font-' + p.fontSize);
+                if (p.contrast && p.contrast !== 'default') el.classList.add('a11y-contrast-' + p.contrast);
+                if (p.bold) el.classList.add('a11y-bold');
+                if (p.spacing) el.classList.add('a11y-spacing');
+                if (p.readingGuide) el.classList.add('a11y-guide-active');
+            }
+        } catch (e) {}
+    })();
+    </script>
     <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js'); ?>"></script>
@@ -33,7 +49,7 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
         body { padding-bottom: 120px; background-color: #f8fafc; }
     </style>
 </head>
-<body>
+<body class="is-ballot-page">
 
     <!-- Sticky Header with Voter Info & Timeout -->
     <header class="ballot-header">
@@ -1130,5 +1146,8 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
         });
     });
     </script>
+
+    <!-- Web Accessibility Widget (Fitur Aksesibilitas) -->
+    <?php $this->load->view('voting/accessibility_widget', ['page' => 'ballot']); ?>
 </body>
 </html>

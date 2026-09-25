@@ -1539,5 +1539,656 @@ body {
   transform: rotate(180deg);
 }
 
+/* ==========================================================================
+   WEB ACCESSIBILITY SYSTEM (FITUR AKSESIBILITAS WEB)
+   Khusus Bilik E-Voting: Halaman Scan RFID & Surat Suara (Ballot)
+   ========================================================================== */
+
+/* --- 1. Font Size Scaling (Text Resizer) --- */
+html.a11y-font-normal {
+  font-size: 100% !important;
+}
+html.a11y-font-large {
+  font-size: 114% !important;
+}
+html.a11y-font-xlarge {
+  font-size: 128% !important;
+}
+html.a11y-font-xxlarge {
+  font-size: 142% !important;
+}
+
+html.a11y-font-large .candidate-card,
+html.a11y-font-xlarge .candidate-card,
+html.a11y-font-xxlarge .candidate-card {
+  min-height: 400px;
+}
+html.a11y-font-large .scanner-panel,
+html.a11y-font-xlarge .scanner-panel,
+html.a11y-font-xxlarge .scanner-panel {
+  max-width: 580px;
+}
+
+/* --- 2. High Contrast Dark Mode --- */
+html.a11y-contrast-dark,
+html.a11y-contrast-dark body {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+}
+
+html.a11y-contrast-dark .kop-navbar,
+html.a11y-contrast-dark .ballot-header,
+html.a11y-contrast-dark .scanner-panel,
+html.a11y-contrast-dark .ballot-sticky-footer,
+html.a11y-contrast-dark .modal-content,
+html.a11y-contrast-dark .review-card,
+html.a11y-contrast-dark .candidate-card,
+html.a11y-contrast-dark .ballot-stepper-wrapper,
+html.a11y-contrast-dark .category-container,
+html.a11y-contrast-dark .confirm-card {
+  background-color: #111827 !important;
+  border-color: #374151 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.a11y-contrast-dark .scanner-status {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.a11y-contrast-dark .text-muted,
+html.a11y-contrast-dark .text-secondary,
+html.a11y-contrast-dark .category-card-subtitle,
+html.a11y-contrast-dark .confirm-candidate-num,
+html.a11y-contrast-dark .candidate-seq-text {
+  color: #94a3b8 !important;
+}
+
+html.a11y-contrast-dark .text-dark,
+html.a11y-contrast-dark .voter-display-name,
+html.a11y-contrast-dark .ballot-main-title,
+html.a11y-contrast-dark .category-card-title,
+html.a11y-contrast-dark .candidate-card-name,
+html.a11y-contrast-dark .confirm-candidate-name,
+html.a11y-contrast-dark .stepper-title,
+html.a11y-contrast-dark .modal-title {
+  color: #ffffff !important;
+}
+
+html.a11y-contrast-dark .candidate-quote-preview,
+html.a11y-contrast-dark .confirm-vision-styled {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.a11y-contrast-dark #stickySelectionSummary,
+html.a11y-contrast-dark .sticky-status-label {
+  color: #e2e8f0 !important;
+}
+
+html.a11y-contrast-dark #stickySelectionSummary .text-muted {
+  color: #94a3b8 !important;
+}
+
+html.a11y-contrast-dark .a11y-contrast-card {
+  background-color: #1e293b !important;
+  border-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+html.a11y-contrast-dark .a11y-contrast-card.active {
+  border-color: #10b981 !important;
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
+}
+
+html.a11y-contrast-dark .a11y-switch-row,
+html.a11y-contrast-dark .a11y-preview-box {
+  background-color: #1e293b !important;
+  border-color: #374151 !important;
+  color: #f8fafc !important;
+}
+
+html.a11y-contrast-dark .btn-close {
+  background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px !important;
+  opacity: 0.9 !important;
+  filter: none !important;
+  padding: 0.5rem !important;
+}
+
+html.a11y-contrast-dark .bg-light {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.a11y-contrast-dark .candidate-card:hover {
+  border-color: #38bdf8 !important;
+  background-color: #1e293b !important;
+}
+
+html.a11y-contrast-dark .candidate-card.is-selected-ketua {
+  background-color: #064e3b !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 0 0 3px #10b981 !important;
+}
+
+html.a11y-contrast-dark .candidate-card.is-selected-pengawas {
+  background-color: #1e3a8a !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px #3b82f6 !important;
+}
+
+/* Candidate Detail Modal in Dark Mode */
+html.a11y-contrast-dark .modal-content {
+  background-color: #111827 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #374151 !important;
+}
+html.a11y-contrast-dark .modal-header,
+html.a11y-contrast-dark .modal-footer {
+  border-color: #374151 !important;
+  background-color: #111827 !important;
+}
+html.a11y-contrast-dark .modal-vision-card {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-left: 4px solid #10b981 !important;
+  color: #f8fafc !important;
+}
+html.a11y-contrast-dark .modal-vision-card.is-pengawas {
+  border-left-color: #3b82f6 !important;
+}
+html.a11y-contrast-dark .modal-vision-text {
+  color: #f1f5f9 !important;
+  font-style: italic !important;
+}
+html.a11y-contrast-dark .modal-mission-item {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #f1f5f9 !important;
+}
+html.a11y-contrast-dark .modal-mission-item:hover {
+  background-color: #273549 !important;
+  border-color: #4b5563 !important;
+}
+html.a11y-contrast-dark .mission-num-badge {
+  background-color: #1e3a8a !important;
+  border-color: #60a5fa !important;
+  color: #93c5fd !important;
+}
+html.a11y-contrast-dark .mission-num-badge.badge-ketua {
+  background-color: #064e3b !important;
+  border-color: #34d399 !important;
+  color: #a7f3d0 !important;
+}
+html.a11y-contrast-dark .mission-item-text {
+  color: #e2e8f0 !important;
+}
+html.a11y-contrast-dark .mission-lead-title {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+html.a11y-contrast-dark #modalCandNameSub {
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark #modalCandNumLabel,
+html.a11y-contrast-dark #modalMissionCount {
+  background-color: #1e293b !important;
+  border-color: #374151 !important;
+  color: #cbd5e1 !important;
+}
+html.a11y-contrast-dark .modal-footer .btn-secondary {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #ffffff !important;
+}
+
+html.a11y-contrast-dark .badge-voter-member,
+html.a11y-contrast-dark .event-pill-badge,
+html.a11y-contrast-dark .ballot-timer-box,
+html.a11y-contrast-dark .category-quota-badge,
+html.a11y-contrast-dark .badge-status-picked {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+/* --- 3. High Contrast Yellow-on-Black (WCAG AAA - Lansia & Low Vision) --- */
+html.a11y-contrast-yellow,
+html.a11y-contrast-yellow body {
+  background-color: #000000 !important;
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .kop-navbar,
+html.a11y-contrast-yellow .ballot-header,
+html.a11y-contrast-yellow .scanner-panel,
+html.a11y-contrast-yellow .ballot-sticky-footer,
+html.a11y-contrast-yellow .modal-content,
+html.a11y-contrast-yellow .review-card,
+html.a11y-contrast-yellow .candidate-card,
+html.a11y-contrast-yellow .ballot-stepper-wrapper,
+html.a11y-contrast-yellow .category-container,
+html.a11y-contrast-yellow .confirm-card,
+html.a11y-contrast-yellow .bg-light,
+html.a11y-contrast-yellow .modal-vision-card,
+html.a11y-contrast-yellow .ballot-timer-box,
+html.a11y-contrast-yellow .a11y-preview-box,
+html.a11y-contrast-yellow .scanner-status,
+html.a11y-contrast-yellow .candidate-quote-preview,
+html.a11y-contrast-yellow .confirm-vision-styled,
+html.a11y-contrast-yellow .confirm-card-header,
+html.a11y-contrast-yellow .badge-voter-member,
+html.a11y-contrast-yellow .event-pill-badge,
+html.a11y-contrast-yellow .category-quota-badge,
+html.a11y-contrast-yellow .badge-status-picked,
+html.a11y-contrast-yellow .a11y-contrast-card,
+html.a11y-contrast-yellow .a11y-switch-row {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+  box-shadow: none !important;
+}
+
+/* Candidate Detail Modal in Yellow on Black (WCAG AAA) */
+html.a11y-contrast-yellow .modal-content {
+  background-color: #000000 !important;
+  color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+}
+html.a11y-contrast-yellow .modal-header,
+html.a11y-contrast-yellow .modal-footer {
+  border-color: #facc15 !important;
+  background-color: #000000 !important;
+}
+html.a11y-contrast-yellow .modal-vision-card {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  border-left: 5px solid #facc15 !important;
+}
+html.a11y-contrast-yellow .modal-vision-title {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .modal-vision-text {
+  color: #facc15 !important;
+  font-style: italic !important;
+}
+html.a11y-contrast-yellow .modal-mission-item {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .modal-mission-item:hover {
+  background-color: #1a1a00 !important;
+  border-color: #fef08a !important;
+}
+html.a11y-contrast-yellow .mission-num-badge,
+html.a11y-contrast-yellow .mission-num-badge.badge-ketua {
+  background-color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+html.a11y-contrast-yellow .mission-item-text {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .mission-lead-title {
+  color: #facc15 !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+}
+html.a11y-contrast-yellow #modalCandNameSub,
+html.a11y-contrast-yellow #modalCandName {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow #modalCatBadge,
+html.a11y-contrast-yellow #modalCandNumLabel,
+html.a11y-contrast-yellow #modalMissionCount {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .btn-close {
+  background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23facc15'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
+  border: 2px solid #facc15 !important;
+  border-radius: 6px !important;
+  opacity: 1 !important;
+  filter: none !important;
+  padding: 0.5rem !important;
+}
+html.a11y-contrast-yellow .modal-footer .btn-secondary {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .modal-footer .btn-secondary:hover {
+  background-color: #facc15 !important;
+  color: #000000 !important;
+}
+
+html.a11y-contrast-yellow h1,
+html.a11y-contrast-yellow h2,
+html.a11y-contrast-yellow h3,
+html.a11y-contrast-yellow h4,
+html.a11y-contrast-yellow h5,
+html.a11y-contrast-yellow h6,
+html.a11y-contrast-yellow p,
+html.a11y-contrast-yellow span,
+html.a11y-contrast-yellow small,
+html.a11y-contrast-yellow strong,
+html.a11y-contrast-yellow label,
+html.a11y-contrast-yellow i,
+html.a11y-contrast-yellow a,
+html.a11y-contrast-yellow em,
+html.a11y-contrast-yellow .text-muted,
+html.a11y-contrast-yellow .text-secondary,
+html.a11y-contrast-yellow .text-dark,
+html.a11y-contrast-yellow .text-success,
+html.a11y-contrast-yellow .text-primary,
+html.a11y-contrast-yellow .category-card-title,
+html.a11y-contrast-yellow .category-card-subtitle,
+html.a11y-contrast-yellow .candidate-card-name,
+html.a11y-contrast-yellow .confirm-candidate-name,
+html.a11y-contrast-yellow .confirm-candidate-num,
+html.a11y-contrast-yellow .candidate-seq-text,
+html.a11y-contrast-yellow .candidate-num-box,
+html.a11y-contrast-yellow .confirm-vision-content,
+html.a11y-contrast-yellow .voter-display-name,
+html.a11y-contrast-yellow .ballot-main-title,
+html.a11y-contrast-yellow .modal-title,
+html.a11y-contrast-yellow .sticky-summary-text,
+html.a11y-contrast-yellow .sticky-status-label {
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .btn-close {
+  filter: invert(80%) sepia(100%) saturate(1000%) hue-rotate(10deg);
+}
+
+html.a11y-contrast-yellow .btn,
+html.a11y-contrast-yellow button,
+html.a11y-contrast-yellow .btn-wizard-next,
+html.a11y-contrast-yellow .btn-wizard-back,
+html.a11y-contrast-yellow .btn-submit-ballot,
+html.a11y-contrast-yellow .btn-detail-trigger,
+html.a11y-contrast-yellow .btn-card-vision,
+html.a11y-contrast-yellow .btn-card-select,
+html.a11y-contrast-yellow .btn-change-choice,
+html.a11y-contrast-yellow .btn-slider-nav,
+html.a11y-contrast-yellow .btn-cancel-exit {
+  background-color: #000000 !important;
+  color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+}
+
+html.a11y-contrast-yellow .btn:hover,
+html.a11y-contrast-yellow button:hover,
+html.a11y-contrast-yellow .btn-wizard-next:hover,
+html.a11y-contrast-yellow .btn-submit-ballot:hover,
+html.a11y-contrast-yellow .candidate-card.is-selected-ketua,
+html.a11y-contrast-yellow .candidate-card.is-selected-pengawas {
+  background-color: #facc15 !important;
+  color: #000000 !important;
+  border: 2px solid #facc15 !important;
+}
+
+html.a11y-contrast-yellow .candidate-card.is-selected-ketua *,
+html.a11y-contrast-yellow .candidate-card.is-selected-pengawas * {
+  color: #000000 !important;
+}
+
+html.a11y-contrast-yellow .candidate-avatar-img,
+html.a11y-contrast-yellow .candidate-photo,
+html.a11y-contrast-yellow .confirm-avatar-img {
+  border: 2px solid #facc15 !important;
+  filter: contrast(125%) brightness(105%);
+}
+
+html.a11y-contrast-yellow .stepper-circle,
+html.a11y-contrast-yellow .sticky-status-circle {
+  background: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .stepper-item.active .stepper-circle,
+html.a11y-contrast-yellow .stepper-item.completed .stepper-circle,
+html.a11y-contrast-yellow .sticky-status-circle.is-complete {
+  background: #facc15 !important;
+  color: #000000 !important;
+}
+
+/* --- 4. Monochrome Mode (Grayscale) --- */
+html.a11y-contrast-mono {
+  filter: grayscale(100%) contrast(120%) !important;
+}
+html.a11y-contrast-mono .candidate-card.is-selected-ketua,
+html.a11y-contrast-mono .candidate-card.is-selected-pengawas {
+  border: 3px solid #000000 !important;
+  outline: 3px dashed #334155 !important;
+  outline-offset: 2px;
+}
+
+/* --- 5. Readability Enhancements (Bold Font & Line Spacing) --- */
+html.a11y-bold,
+html.a11y-bold body,
+html.a11y-bold p,
+html.a11y-bold span,
+html.a11y-bold div,
+html.a11y-bold label,
+html.a11y-bold button,
+html.a11y-bold a,
+html.a11y-bold input,
+html.a11y-bold small {
+  font-weight: 600 !important;
+}
+html.a11y-bold h1,
+html.a11y-bold h2,
+html.a11y-bold h3,
+html.a11y-bold h4,
+html.a11y-bold h5,
+html.a11y-bold h6,
+html.a11y-bold strong,
+html.a11y-bold .candidate-name {
+  font-weight: 800 !important;
+}
+
+html.a11y-spacing body {
+  line-height: 1.85 !important;
+  letter-spacing: 0.035em !important;
+}
+html.a11y-spacing p,
+html.a11y-spacing .candidate-summary-vision,
+html.a11y-spacing .modal-vision-text {
+  line-height: 2 !important;
+  margin-bottom: 1.25rem !important;
+}
+
+/* --- 6. Reading Guide (Garis Pemandu Baca) --- */
+.a11y-reading-guide-line {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 42px;
+  background: rgba(250, 204, 21, 0.22);
+  border-top: 2px solid #eab308;
+  border-bottom: 2px solid #eab308;
+  pointer-events: none;
+  z-index: 9998;
+  display: none;
+  transform: translateY(-50%);
+  transition: top 0.04s linear;
+}
+html.a11y-guide-active .a11y-reading-guide-line {
+  display: block;
+}
+
+/* --- 7. Floating Action Button (FAB) & Menu Component --- */
+.a11y-fab-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 1040;
+}
+body.is-ballot-page .a11y-fab-container {
+  bottom: 84px; /* Perfectly above the sticky wizard bottom bar */
+}
+
+.a11y-fab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #0f5132;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50px;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(15, 81, 50, 0.35);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 48px;
+  outline: none;
+}
+
+.a11y-fab-btn:hover,
+.a11y-fab-btn:focus-visible {
+  background: #0a3622;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(15, 81, 50, 0.45);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.a11y-fab-icon {
+  font-size: 1.35rem;
+}
+
+@media (max-width: 576px) {
+  .a11y-fab-container {
+    bottom: 18px;
+    left: 16px;
+  }
+  body.is-ballot-page .a11y-fab-container {
+    bottom: 92px;
+  }
+  .a11y-fab-label {
+    display: none;
+  }
+  .a11y-fab-btn {
+    padding: 0.7rem;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    justify-content: center;
+  }
+}
+
+/* Accessibility Modal Controls */
+.a11y-section-title {
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.a11y-font-group .btn {
+  font-weight: 600;
+  padding: 0.6rem 0.5rem;
+  font-size: 0.9rem;
+  border-color: #cbd5e1;
+}
+
+.a11y-font-group .btn.active {
+  background-color: #0f5132;
+  border-color: #0f5132;
+  color: #ffffff;
+}
+
+.a11y-contrast-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+.a11y-contrast-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--kop-radius);
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.a11y-contrast-card:hover {
+  border-color: #0f5132;
+}
+
+.a11y-contrast-card.active {
+  border-color: #0f5132;
+  background-color: #f0fdf4;
+  box-shadow: 0 0 0 2px rgba(15, 81, 50, 0.2);
+}
+
+.a11y-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.a11y-swatch-default {
+  background: #f8fafc;
+  color: #0f5132;
+}
+.a11y-swatch-dark {
+  background: #0b0f19;
+  color: #38bdf8;
+  border-color: #374151;
+}
+.a11y-swatch-yellow {
+  background: #000000;
+  color: #facc15;
+  border-color: #facc15;
+}
+.a11y-swatch-mono {
+  background: #475569;
+  color: #ffffff;
+}
+
+.a11y-switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--kop-radius);
+  margin-bottom: 0.5rem;
+}
+
 
 
