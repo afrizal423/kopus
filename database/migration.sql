@@ -25,7 +25,8 @@ CREATE TABLE `voters` (
   `id`            INT UNSIGNED     NOT NULL AUTO_INCREMENT,
   `rfid_uid`      VARCHAR(64)      NULL DEFAULT NULL COMMENT 'UID kartu RFID (HID Keyboard Wedge)',
   `name`          VARCHAR(120)     NOT NULL,
-  `member_number` VARCHAR(40)      NOT NULL COMMENT 'Nomor anggota koperasi',
+  `member_number` VARCHAR(40)      NOT NULL COMMENT 'Nomor anggota koperasi / NIK',
+  `department`    VARCHAR(100)     NULL DEFAULT NULL COMMENT 'Nama Departemen',
   `status`        ENUM('active','blocked') NOT NULL DEFAULT 'active',
   `has_voted`     TINYINT(1)       NOT NULL DEFAULT 0,
   `voted_at`      DATETIME         NULL DEFAULT NULL,
@@ -34,7 +35,8 @@ CREATE TABLE `voters` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_voters_rfid_uid` (`rfid_uid`),
   KEY `idx_voters_status` (`status`),
-  KEY `idx_voters_has_voted` (`has_voted`)
+  KEY `idx_voters_has_voted` (`has_voted`),
+  KEY `idx_voters_department` (`department`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ---------------------------------------------------------------------
@@ -44,6 +46,7 @@ CREATE TABLE `candidates` (
   `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `category`         ENUM('ketua','pengawas') NOT NULL,
   `candidate_number` INT UNSIGNED NOT NULL,
+  `nik`              VARCHAR(50)  NULL DEFAULT NULL COMMENT 'Nomor Induk Karyawan (NIK)',
   `name`             VARCHAR(120) NOT NULL,
   `photo`            VARCHAR(255) NULL DEFAULT NULL COMMENT 'Path URL foto kandidat',
   `vision`           TEXT         NULL,
@@ -124,30 +127,30 @@ CREATE TABLE `audit_logs` (
 -- DATA AWAL (SEED)
 -- ---------------------------------------------------------------------
 
-INSERT INTO `candidates` (`category`,`candidate_number`,`name`,`photo`,`vision`,`mission`,`is_active`) VALUES
-('ketua', 1, 'Budi Santoso, S.E.',
+INSERT INTO `candidates` (`category`,`candidate_number`,`nik`,`name`,`photo`,`vision`,`mission`,`is_active`) VALUES
+('ketua', 1, 'UBS-00101', 'Budi Santoso, S.E.',
  'assets/foto/ketua-1.svg',
  'Menjadikan koperasi sebagai rumah tumbuh ekonomi anggota yang sehat, transparan, dan berkeadilan bagi seluruh anggota.',
  '1. Digitalisasi seluruh layanan simpan pinjam koperasi.\n2. Program pelatihan dan pendampingan UMKM berkala.\n3. Audit keuangan berkala yang dipublikasikan terbuka.\n4. Peningkatan Sisa Hasil Usaha (SHU) secara proporsional.', 1),
-('ketua', 2, 'Sari Wulandari, M.M.',
+('ketua', 2, 'UBS-00102', 'Sari Wulandari, M.M.',
  'assets/foto/ketua-2.svg',
  'Mewujudkan koperasi modern yang berdaya saing, memperkuat keadilan ekonomi, serta memprioritaskan kesejahteraan anggota.',
  '1. Inkubasi unit usaha kreatif anggota muda.\n2. Efisiensi operasional dan transparansi berbasis TI.\n3. Kerjasama strategis pasokan bahan baku anggota.\n4. Kemudahan akses permodalan usaha mikro.', 1),
-('pengawas', 1, 'Drs. Agus Prasetyo',
+('pengawas', 1, 'UBS-00201', 'Drs. Agus Prasetyo',
  'assets/foto/pengawas-1.svg',
  'Pengawasan yang independen, objektif, tegas, dan berintegritas demi menjaga kepatuhan tata kelola koperasi.',
  '1. Penegakan tata kelola koperasi yang akuntabel.\n2. Kanal pelaporan pengaduan anggota yang aman dan rahasia.\n3. Audit kepatuhan operasional berkala.\n4. Pendampingan tindak lanjut rekomendasi audit.', 1),
-('pengawas', 2, 'Ir. Nina Kurniawati',
+('pengawas', 2, 'UBS-00202', 'Ir. Nina Kurniawati',
  'assets/foto/pengawas-2.svg',
  'Mendorong pengawasan partisipatif berbasis sistem informasi demi melindungi aset dan hak setiap anggota koperasi.',
  '1. Edukasi hak dan kewajiban pengawasan bagi anggota.\n2. Verifikasi fisik berkala atas aset unit usaha.\n3. Publikasi ringkasan pengawasan triwulan.\n4. Evaluasi performa manajemen pengurus.', 1);
 
-INSERT INTO `voters` (`rfid_uid`,`name`,`member_number`,`status`,`has_voted`,`voted_at`) VALUES
-('0044 0202 2019 0505', 'Andi Wijaya',      'A-1001', 'active', 0, NULL),
-('0044 0202 2019 0512', 'Rina Marlina',     'A-1002', 'active', 0, NULL),
-('0044 0202 2019 0530', 'Joko Susilo',      'A-1003', 'active', 0, NULL),
-('0044 0202 2019 0541', 'Dewi Lestari',     'A-1004', 'active', 0, NULL),
-('0044 0202 2019 0588', 'Bambang Hartono', 'A-1005', 'blocked', 0, NULL);
+INSERT INTO `voters` (`rfid_uid`,`name`,`member_number`,`department`,`status`,`has_voted`,`voted_at`) VALUES
+('0044 0202 2019 0505', 'Andi Wijaya',      'A-1001', 'Produksi', 'active', 0, NULL),
+('0044 0202 2019 0512', 'Rina Marlina',     'A-1002', 'Keuangan', 'active', 0, NULL),
+('0044 0202 2019 0530', 'Joko Susilo',      'A-1003', 'Logistik', 'active', 0, NULL),
+('0044 0202 2019 0541', 'Dewi Lestari',     'A-1004', 'HRD',      'active', 0, NULL),
+('0044 0202 2019 0588', 'Bambang Hartono', 'A-1005', 'IT',       'blocked', 0, NULL);
 
 INSERT INTO `admin_users` (`username`, `password_hash`, `full_name`, `role`) VALUES
 ('admin', '$2y$10$8oUOTu9W5SytJQEf.TXENOaJREAdu0YETzdz/KO9l6NaOEQurdKTq', 'Ketua Panitia Pemilihan', 'admin'),

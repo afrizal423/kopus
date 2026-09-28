@@ -121,6 +121,7 @@ class Admin extends CI_Controller {
         $category = $this->input->post('category', TRUE);
         $candidate_number = (int)$this->input->post('candidate_number');
         $name = trim((string)$this->input->post('name', TRUE));
+        $nik = trim((string)$this->input->post('nik', TRUE));
         $vision = trim((string)$this->input->post('vision', TRUE));
         $mission = trim((string)$this->input->post('mission', TRUE));
 
@@ -134,7 +135,7 @@ class Admin extends CI_Controller {
         if (!empty($_FILES['photo']['name'])) {
             $config['upload_path']   = './assets/uploads/candidates/';
             $config['allowed_types'] = 'gif|jpg|jpeg|png|webp|svg';
-            $config['max_size']      = 2048; // 2MB
+            $config['max_size']      = 10240; // 10MB
             $config['encrypt_name']  = TRUE;
 
             $this->load->library('upload', $config);
@@ -152,6 +153,7 @@ class Admin extends CI_Controller {
         $data = array(
             'category' => $category,
             'candidate_number' => $candidate_number,
+            'nik' => $nik,
             'name' => $name,
             'vision' => $vision,
             'mission' => $mission
@@ -163,14 +165,14 @@ class Admin extends CI_Controller {
 
         if ($id > 0) {
             $this->Admin_model->update_candidate($id, $data);
-            $this->Admin_model->log_audit('UPDATE_CANDIDATE', $this->session->userdata('admin_username'), 'Mengubah calon #' . $id . ' (' . $name . ')');
+            $this->Admin_model->log_audit('UPDATE_CANDIDATE', $this->session->userdata('admin_username'), 'Mengubah calon #' . $id . ' (' . $name . (!empty($nik) ? ' - NIK: ' . $nik : '') . ')');
             $this->session->set_flashdata('success', 'Data calon berhasil diperbarui.');
         } else {
             if (!$photo_path) {
                 $data['photo'] = 'assets/foto/default-avatar.svg';
             }
             $this->Admin_model->create_candidate($data);
-            $this->Admin_model->log_audit('CREATE_CANDIDATE', $this->session->userdata('admin_username'), 'Menambah calon baru (' . $name . ')');
+            $this->Admin_model->log_audit('CREATE_CANDIDATE', $this->session->userdata('admin_username'), 'Menambah calon baru (' . $name . (!empty($nik) ? ' - NIK: ' . $nik : '') . ')');
             $this->session->set_flashdata('success', 'Calon baru berhasil ditambahkan.');
         }
 
@@ -229,6 +231,7 @@ class Admin extends CI_Controller {
         $rfid_uid = trim((string)$this->input->post('rfid_uid', TRUE));
         $name = trim((string)$this->input->post('name', TRUE));
         $member_number = trim((string)$this->input->post('member_number', TRUE));
+        $department = trim((string)$this->input->post('department', TRUE));
 
         if (empty($rfid_uid) || empty($name) || empty($member_number)) {
             $this->session->set_flashdata('error', 'Semua kolom data pemilih wajib diisi.');
@@ -240,11 +243,13 @@ class Admin extends CI_Controller {
             'rfid_uid' => $rfid_uid,
             'name' => $name,
             'member_number' => $member_number,
+            'department' => $department,
             'status' => 'active'
         ));
 
         if ($res['status']) {
-            $this->Admin_model->log_audit('CREATE_VOTER', $this->session->userdata('admin_username'), 'Mendaftarkan kartu RFID baru untuk ' . $name);
+            $log_info = 'Mendaftarkan kartu RFID baru untuk ' . $name . (!empty($department) ? ' (' . $department . ')' : '');
+            $this->Admin_model->log_audit('CREATE_VOTER', $this->session->userdata('admin_username'), $log_info);
             $this->session->set_flashdata('success', $res['message']);
         } else {
             $this->session->set_flashdata('error', $res['message']);

@@ -48,12 +48,12 @@ class Admin_model extends CI_Model {
 
     public function get_category_results($category) {
         $query = $this->db->query(
-            "SELECT c.id, c.candidate_number, c.name, c.photo, c.is_active,
+            "SELECT c.id, c.candidate_number, c.nik, c.name, c.photo, c.is_active,
                     COUNT(v.id) AS vote_count
              FROM candidates c
              LEFT JOIN votes v ON v.candidate_id = c.id
              WHERE c.category = ?
-             GROUP BY c.id, c.candidate_number, c.name, c.photo, c.is_active
+             GROUP BY c.id, c.candidate_number, c.nik, c.name, c.photo, c.is_active
              ORDER BY c.candidate_number ASC",
             array($category)
         );
@@ -127,8 +127,8 @@ class Admin_model extends CI_Model {
         if (!empty($search)) {
             $like = '%' . $this->db->escape_like_str($search) . '%';
             $query = $this->db->query(
-                "SELECT * FROM voters WHERE name LIKE ? OR member_number LIKE ? OR rfid_uid LIKE ? ORDER BY id DESC LIMIT 100",
-                array($like, $like, $like)
+                "SELECT * FROM voters WHERE name LIKE ? OR member_number LIKE ? OR rfid_uid LIKE ? OR department LIKE ? ORDER BY id DESC LIMIT 100",
+                array($like, $like, $like, $like)
             );
         } else {
             $query = $this->db->query("SELECT * FROM voters ORDER BY id DESC LIMIT 100");
@@ -280,7 +280,7 @@ class Admin_model extends CI_Model {
 
     public function get_voter_ballot_history($search = '') {
         $clean = trim((string)$search);
-        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.name AS voter_name, vt.voted_at,
+        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.department, vt.name AS voter_name, vt.voted_at,
                        v.id AS vote_id, v.receipt_token, v.vote_hash,
                        c.id AS candidate_id, c.name AS candidate_name, c.category, c.candidate_number
                 FROM voters vt
@@ -288,8 +288,8 @@ class Admin_model extends CI_Model {
                 JOIN candidates c ON c.id = v.candidate_id";
 
         if (!empty($clean)) {
-            $sql .= " WHERE (vt.name LIKE ? OR vt.member_number LIKE ? OR v.receipt_token LIKE ?)";
-            $params = array('%' . $clean . '%', '%' . $clean . '%', '%' . $clean . '%');
+            $sql .= " WHERE (vt.name LIKE ? OR vt.member_number LIKE ? OR vt.department LIKE ? OR v.receipt_token LIKE ?)";
+            $params = array('%' . $clean . '%', '%' . $clean . '%', '%' . $clean . '%', '%' . $clean . '%');
         } else {
             $params = array();
         }
@@ -304,6 +304,7 @@ class Admin_model extends CI_Model {
                 $grouped[$vid] = array(
                     'voter_id'      => $r['voter_id'],
                     'member_number' => $r['member_number'],
+                    'department'    => $r['department'] ?? '',
                     'voter_name'    => $r['voter_name'],
                     'voted_at'      => $r['voted_at'],
                     'receipt_token' => $r['receipt_token'],
@@ -322,7 +323,7 @@ class Admin_model extends CI_Model {
 
     public function get_doorprize_participants($search = '') {
         $clean = trim((string)$search);
-        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.name, vt.name AS voter_name, vt.voted_at,
+        $sql = "SELECT vt.id AS voter_id, vt.member_number, vt.department, vt.name, vt.name AS voter_name, vt.voted_at,
                        COALESCE((SELECT receipt_token FROM votes WHERE voter_id = vt.id LIMIT 1), CONCAT('KOP-', UPPER(SUBSTRING(MD5(vt.id), 1, 8)))) AS receipt_token
                 FROM voters vt
                 WHERE vt.has_voted = 1 AND vt.status = 'active'";

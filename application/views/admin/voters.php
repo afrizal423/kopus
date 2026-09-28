@@ -112,7 +112,7 @@
                         <div class="col-md-5">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-                                <input type="text" name="q" class="form-control" placeholder="Cari nama, nomor anggota, atau UID kartu..." value="<?= htmlspecialchars($search); ?>">
+                                <input type="text" name="q" class="form-control" placeholder="Cari nama, NIK, departemen, atau UID kartu..." value="<?= htmlspecialchars($search); ?>">
                             </div>
                         </div>
                         <div class="col-auto">
@@ -130,8 +130,9 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>No. Anggota</th>
+                                    <th>NIK / No. Anggota</th>
                                     <th>Nama Pemilih</th>
+                                    <th>Departemen</th>
                                     <th>UID Kartu RFID</th>
                                     <th>Status Akses</th>
                                     <th>Status Hak Suara</th>
@@ -142,7 +143,7 @@
                             <tbody>
                                 <?php if (empty($voters)): ?>
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-muted">
+                                    <td colspan="8" class="text-center py-4 text-muted">
                                         Tidak ditemukan data pemilih yang sesuai.
                                     </td>
                                 </tr>
@@ -152,6 +153,15 @@
                                     <td class="fw-semibold text-dark"><?= htmlspecialchars($v['member_number']); ?></td>
                                     <td>
                                         <div class="fw-bold text-dark"><?= htmlspecialchars($v['name']); ?></div>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($v['department'])): ?>
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="fas fa-building text-muted me-1"></i><?= htmlspecialchars($v['department']); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">-</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <code class="text-dark bg-light px-2 py-1 rounded border small">
@@ -224,13 +234,18 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Nomor Anggota Koperasi</label>
-                            <input type="text" name="member_number" class="form-control" placeholder="Contoh: A-1006" required>
+                            <label class="form-label small fw-semibold">NIK (No. Induk Karyawan)</label>
+                            <input type="text" name="member_number" class="form-control" placeholder="019xxx" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Nama Lengkap Anggota</label>
                             <input type="text" name="name" class="form-control" placeholder="Nama lengkap sesuai data koperasi" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Departemen</label>
+                            <input type="text" name="department" class="form-control" placeholder="Contoh: Produksi, IT, HRD, Keuangan, dsb.">
                         </div>
                     </div>
 

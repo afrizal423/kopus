@@ -22,7 +22,7 @@ class Voting_model extends CI_Model {
 
     public function get_candidates($category) {
         $query = $this->db->query(
-            "SELECT id, category, candidate_number, name, photo, vision, mission 
+            "SELECT id, category, candidate_number, nik, name, photo, vision, mission 
              FROM candidates 
              WHERE category = ? AND is_active = 1 
              ORDER BY candidate_number ASC",

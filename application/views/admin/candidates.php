@@ -115,6 +115,7 @@
                                     <th style="width: 70px;">No. Urut</th>
                                     <th style="width: 70px;">Foto</th>
                                     <th>Nama Calon</th>
+                                    <th style="width: 120px;">NIK</th>
                                     <th>Kategori</th>
                                     <th>Visi &amp; Misi</th>
                                     <th style="width: 100px;">Suara Masuk</th>
@@ -125,7 +126,7 @@
                             <tbody>
                                 <?php if (empty($candidates)): ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-4 text-muted">
+                                    <td colspan="9" class="text-center py-4 text-muted">
                                         Belum ada data calon yang didaftarkan.
                                     </td>
                                 </tr>
@@ -142,6 +143,15 @@
                                     </td>
                                     <td>
                                         <div class="fw-bold text-dark"><?= htmlspecialchars($c['name']); ?></div>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($c['nik'])): ?>
+                                            <span class="badge bg-light text-dark border font-monospace px-2 py-1">
+                                                <i class="fas fa-id-badge text-muted me-1"></i><?= htmlspecialchars($c['nik']); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">-</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <span class="badge <?= ($c['category'] === 'ketua') ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-primary-subtle text-primary border border-primary-subtle'; ?> text-capitalize">
@@ -174,6 +184,7 @@
                                                     data-category="<?= $c['category']; ?>"
                                                     data-number="<?= $c['candidate_number']; ?>"
                                                     data-name="<?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8'); ?>"
+                                                    data-nik="<?= htmlspecialchars($c['nik'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
                                                     title="Edit Data">
                                                 <i class="fas fa-edit"></i>
                                             </button>
@@ -297,9 +308,15 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">Nama Lengkap Calon (Beserta Gelar)</label>
-                        <input type="text" name="name" id="addCandName" class="form-control" placeholder="Contoh: Budi Santoso, S.E." required>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label small fw-semibold">Nama Lengkap Calon (Beserta Gelar)</label>
+                            <input type="text" name="name" id="addCandName" class="form-control" placeholder="Contoh: Budi Santoso, S.E." required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-semibold">NIK (No. Induk Karyawan)</label>
+                            <input type="text" name="nik" id="addCandNik" class="form-control" placeholder="Contoh: UBS-00101">
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -463,9 +480,15 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold">Nama Lengkap Calon</label>
-                        <input type="text" name="name" id="editCandName" class="form-control" required>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label small fw-semibold">Nama Lengkap Calon</label>
+                            <input type="text" name="name" id="editCandName" class="form-control" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-semibold">NIK (No. Induk Karyawan)</label>
+                            <input type="text" name="nik" id="editCandNik" class="form-control" placeholder="Contoh: UBS-00101">
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -678,6 +701,7 @@
             const cat = candData.category || $(this).data('category');
             const num = candData.candidate_number || $(this).data('number');
             const name = candData.name || $(this).data('name');
+            const nik = (candData.nik !== undefined) ? candData.nik : ($(this).data('nik') || '');
             const vision = (candData.vision !== undefined) ? candData.vision : $(this).data('vision');
             const mission = (candData.mission !== undefined) ? candData.mission : $(this).data('mission');
 
@@ -685,6 +709,7 @@
             $('#editCandCategory').val(cat);
             $('#editCandNumber').val(num);
             $('#editCandName').val(name);
+            $('#editCandNik').val(nik);
             $('#editCandVision').val(vision);
             $('#editCandMission').val(mission);
 

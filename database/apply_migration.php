@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `voters` (
   `rfid_uid`      VARCHAR(64) NOT NULL,
   `name`          VARCHAR(120) NOT NULL,
   `member_number` VARCHAR(40) NOT NULL,
+  `department`    VARCHAR(100) NULL DEFAULT NULL,
   `status`        ENUM('active','blocked') NOT NULL DEFAULT 'active',
   `has_voted`     TINYINT(1) NOT NULL DEFAULT 0,
   `voted_at`      DATETIME NULL DEFAULT NULL,
@@ -22,9 +23,23 @@ CREATE TABLE IF NOT EXISTS `voters` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_voters_rfid_uid` (`rfid_uid`),
   KEY `idx_voters_status` (`status`),
-  KEY `idx_voters_has_voted` (`has_voted`)
+  KEY `idx_voters_has_voted` (`has_voted`),
+  KEY `idx_voters_department` (`department`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ");
+
+// Check if department exists in voters table
+$voter_cols = [];
+$res_v = $mysqli->query("SHOW COLUMNS FROM `voters`");
+if ($res_v) {
+    while ($r = $res_v->fetch_assoc()) {
+        $voter_cols[] = $r['Field'];
+    }
+    if (!in_array('department', $voter_cols)) {
+        $mysqli->query("ALTER TABLE `voters` ADD COLUMN `department` VARCHAR(100) NULL DEFAULT NULL COMMENT 'Nama Departemen' AFTER `member_number`");
+        echo "Added column department to voters\n";
+    }
+}
 
 // 2. Ensure candidates table exists
 $mysqli->query("
@@ -32,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `candidates` (
   `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `category`         ENUM('ketua','pengawas') NOT NULL,
   `candidate_number` INT UNSIGNED NOT NULL,
+  `nik`              VARCHAR(50) NULL DEFAULT NULL,
   `name`             VARCHAR(120) NOT NULL,
   `photo`            VARCHAR(255) NULL DEFAULT NULL,
   `vision`           TEXT NULL,
@@ -45,6 +61,19 @@ CREATE TABLE IF NOT EXISTS `candidates` (
   KEY `idx_candidates_active` (`is_active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ");
+
+// Check if nik exists in candidates table
+$cand_cols = [];
+$res_c = $mysqli->query("SHOW COLUMNS FROM `candidates`");
+if ($res_c) {
+    while ($r = $res_c->fetch_assoc()) {
+        $cand_cols[] = $r['Field'];
+    }
+    if (!in_array('nik', $cand_cols)) {
+        $mysqli->query("ALTER TABLE `candidates` ADD COLUMN `nik` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Nomor Induk Karyawan (NIK)' AFTER `candidate_number`");
+        echo "Added column nik to candidates\n";
+    }
+}
 
 // 3. Ensure votes table has cryptographic ledger columns
 $mysqli->query("

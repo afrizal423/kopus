@@ -131,7 +131,10 @@ $tanggal_indo = $hari_ini . ', ' . date('d') . ' ' . $bulan_ini . ' ' . date('Y'
                 <?php foreach ($stats['results']['ketua']['candidates'] as $c): ?>
                 <tr>
                     <td class="text-center"><?= $c['candidate_number']; ?></td>
-                    <td><?= htmlspecialchars($c['name']); ?></td>
+                    <td>
+                        <?= htmlspecialchars($c['name']); ?>
+                        <?= !empty($c['nik']) ? '<span class="text-muted small"> (NIK: ' . htmlspecialchars($c['nik']) . ')</span>' : ''; ?>
+                    </td>
                     <td class="text-end fw-bold"><?= number_format($c['vote_count']); ?> suara</td>
                     <td class="text-end"><?= $c['percentage']; ?>%</td>
                 </tr>
@@ -154,7 +157,10 @@ $tanggal_indo = $hari_ini . ', ' . date('d') . ' ' . $bulan_ini . ' ' . date('Y'
                 <?php foreach ($stats['results']['pengawas']['candidates'] as $c): ?>
                 <tr>
                     <td class="text-center"><?= $c['candidate_number']; ?></td>
-                    <td><?= htmlspecialchars($c['name']); ?></td>
+                    <td>
+                        <?= htmlspecialchars($c['name']); ?>
+                        <?= !empty($c['nik']) ? '<span class="text-muted small"> (NIK: ' . htmlspecialchars($c['nik']) . ')</span>' : ''; ?>
+                    </td>
                     <td class="text-end fw-bold"><?= number_format($c['vote_count']); ?> suara</td>
                     <td class="text-end"><?= $c['percentage']; ?>%</td>
                 </tr>
