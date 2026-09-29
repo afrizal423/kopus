@@ -7,6 +7,15 @@
     <link href="<?= base_url('assets/vendor/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome/css/all.min.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/koperasi.css'); ?>">
+    <script>
+        (function() {
+            try {
+                if (localStorage.getItem('kopus_admin_sidebar_collapsed') === '1' && window.innerWidth >= 768) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch(e) {}
+        })();
+    </script>
     <script src="<?= base_url('assets/vendor/jquery/jquery-3.6.0.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js'); ?>"></script>
@@ -16,70 +25,19 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar Navigation -->
-            <nav class="col-md-3 col-lg-2 p-3 admin-sidebar d-flex flex-column">
-                <div class="d-flex align-items-center gap-2 mb-4 px-2">
-                    <i class="fas fa-landmark text-success fs-4"></i>
-                    <div>
-                        <div class="fw-bold text-white small"><?= htmlspecialchars($settings['cooperative_name'] ?? 'Koperasi'); ?></div>
-                        <span class="badge bg-secondary" style="font-size: 0.65rem;">Panel Pengawas</span>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-column gap-1 flex-grow-1">
-                    <a href="<?= base_url('admin'); ?>">
-                        <i class="fas fa-chart-pie"></i>
-                        <span>Dashboard &amp; Hasil</span>
-                    </a>
-                    <a href="<?= base_url('admin/candidates'); ?>" class="active">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Manajemen Calon</span>
-                    </a>
-                    <a href="<?= base_url('admin/voters'); ?>">
-                        <i class="fas fa-id-card"></i>
-                        <span>DPT &amp; Kartu RFID</span>
-                    </a>
-                    <a href="<?= base_url('admin/report_turnout'); ?>">
-                        <i class="fas fa-user-check"></i>
-                        <span>Laporan Partisipasi</span>
-                    </a>
-                    <a href="<?= base_url('admin/audit_votes'); ?>">
-                        <i class="fas fa-history"></i>
-                        <span>Audit Jejak Suara</span>
-                    </a>
-                    <a href="<?= base_url('admin/doorprize'); ?>">
-                        <i class="fas fa-gift"></i>
-                        <span>Undian Doorprize</span>
-                    </a>
-                    <a href="<?= base_url('admin/export_results'); ?>" target="_blank">
-                        <i class="fas fa-file-signature"></i>
-                        <span>Cetak Berita Acara</span>
-                    </a>
-                    <a href="<?= base_url('voting'); ?>" target="_blank">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span>Bilik Suara (Kiosk)</span>
-                    </a>
-                </div>
-
-                <div class="border-top border-secondary pt-3 mt-auto px-2">
-                    <div class="text-white small fw-semibold mb-1"><?= htmlspecialchars($this->session->userdata('admin_name')); ?></div>
-                    <div class="text-muted small mb-2 text-capitalize">Peran: <?= htmlspecialchars($this->session->userdata('admin_role')); ?></div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-outline-light btn-sm py-0 px-2" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#modalChangePassword">
-                            <i class="fas fa-key me-1"></i> Ganti Password
-                        </button>
-                        <a href="<?= base_url('admin/logout'); ?>" class="text-danger p-0 d-inline-flex align-items-center gap-1 small">
-                            <i class="fas fa-sign-out-alt"></i> Keluar
-                        </a>
-                    </div>
-                </div>
-            </nav>
+            <?php $this->load->view('admin/sidebar', array('current_page' => 'candidates')); ?>
 
             <!-- Main Content Area -->
-            <main class="col-md-9 col-lg-10 p-4">
+            <main class="col-md-9 col-lg-10 p-4 admin-main" id="adminMain">
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                    <div>
-                        <h1 class="h3 fw-bold mb-1">Manajemen Calon Pengurus &amp; Pengawas</h1>
-                        <p class="text-muted small mb-0">Kelola daftar calon kandidat, nomor urut, foto profil, serta visi dan misi.</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sidebar-toggle shadow-sm" id="sidebarToggle" title="Tampilkan/Sembunyikan Sidebar" aria-label="Toggle Sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div>
+                            <h1 class="h3 fw-bold mb-1">Manajemen Calon Pengurus &amp; Pengawas</h1>
+                            <p class="text-muted small mb-0">Kelola daftar calon kandidat, nomor urut, foto profil, serta visi dan misi.</p>
+                        </div>
                     </div>
 
                     <div class="d-flex align-items-center gap-2">
