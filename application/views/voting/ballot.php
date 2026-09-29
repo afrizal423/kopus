@@ -213,8 +213,9 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                                     <span class="candidate-seq-text">KANDIDAT <?= sprintf('%02d', $c['candidate_number']); ?></span>
                                 </div>
 
-                                <div class="candidate-avatar-wrap">
+                                <div class="candidate-avatar-wrap" title="Klik untuk melihat foto lebih besar" role="button" aria-label="Lihat foto <?= htmlspecialchars($c['name']); ?> lebih besar">
                                     <img src="<?= base_url($c['photo']); ?>" alt="<?= htmlspecialchars($c['name']); ?>" class="candidate-avatar-img" onerror="this.src='<?= base_url('assets/foto/default-avatar.svg'); ?>'">
+                                    <span class="avatar-zoom-icon"><i class="fas fa-search-plus"></i></span>
                                 </div>
 
                                 <div class="candidate-card-name"><?= htmlspecialchars($c['name']); ?></div>
@@ -303,8 +304,9 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                                     <span class="candidate-seq-text">KANDIDAT <?= sprintf('%02d', $c['candidate_number']); ?></span>
                                 </div>
 
-                                <div class="candidate-avatar-wrap">
+                                <div class="candidate-avatar-wrap" title="Klik untuk melihat foto lebih besar" role="button" aria-label="Lihat foto <?= htmlspecialchars($c['name']); ?> lebih besar">
                                     <img src="<?= base_url($c['photo']); ?>" alt="<?= htmlspecialchars($c['name']); ?>" class="candidate-avatar-img" onerror="this.src='<?= base_url('assets/foto/default-avatar.svg'); ?>'">
+                                    <span class="avatar-zoom-icon"><i class="fas fa-search-plus"></i></span>
                                 </div>
 
                                 <div class="candidate-card-name"><?= htmlspecialchars($c['name']); ?></div>
@@ -561,6 +563,37 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
         </div>
     </div>
 
+    <!-- Modal Preview Foto Kandidat (Lightbox Dialog) -->
+    <div class="modal fade" id="modalPhotoPreview" tabindex="-1" aria-labelledby="modalPhotoTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-bottom py-3 px-4 bg-light">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge" id="modalPhotoCatBadge">Calon</span>
+                        <h6 class="modal-title fw-bold text-dark m-0" id="modalPhotoTitle">Foto Kandidat</h6>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="photo-preview-frame mb-3">
+                        <img src="" id="modalPhotoImage" alt="Foto Kandidat" onerror="this.src='<?= base_url('assets/foto/default-avatar.svg'); ?>'">
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1" id="modalPhotoCandName">-</h5>
+                    <div class="text-muted small mb-4" id="modalPhotoCandSub">-</div>
+                    
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary px-3 py-2 rounded-pill" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Tutup
+                        </button>
+                        <button type="button" class="btn px-4 py-2 rounded-pill text-white fw-bold" id="btnSelectFromPhotoModal">
+                            <span id="btnSelectFromPhotoText"><i class="fas fa-check me-1"></i> Pilih Calon Ini</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     $(document).ready(function() {
         const $form = $('#ballotForm');
@@ -570,6 +603,8 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
         const $timer = $('#timerCountdown');
         const $timerBox = $('#timerBox');
         const modalDetail = new bootstrap.Modal(document.getElementById('modalCandidateDetail'));
+        const modalPhoto = new bootstrap.Modal(document.getElementById('modalPhotoPreview'));
+        let currentPhotoCandidate = null;
 
         let currentStep = 1;
         let selectedKetua = null;
@@ -679,11 +714,7 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
         setupSoftSlider('sliderPengawas', 'btnSlidePrevPengawas', 'btnSlideNextPengawas');
 
         // 3. Candidate Selection Handler
-        $('.candidate-card').on('click', function(e) {
-            // Ignore click if clicking the detail modal trigger
-            if ($(e.target).closest('.btn-detail-trigger').length) return;
-
-            const $card = $(this);
+        function selectCandidateCard($card) {
             const category = $card.data('category');
             const id = $card.data('id');
             const name = $card.data('name');
@@ -721,6 +752,72 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
             }
 
             syncUI();
+        }
+
+        $('.candidate-card').on('click', function(e) {
+            // Ignore click if clicking the detail modal trigger or the photo avatar wrap
+            if ($(e.target).closest('.btn-detail-trigger, .candidate-avatar-wrap').length) return;
+            selectCandidateCard($(this));
+        });
+
+        // Photo Avatar Click Handler -> Open Photo Preview Modal
+        $('.candidate-avatar-wrap').on('click', function(e) {
+            e.stopPropagation();
+            const $card = $(this).closest('.candidate-card');
+            if (!$card.length) return;
+
+            const category = $card.data('category');
+            const id = $card.data('id');
+            const name = $card.data('name');
+            const num = $card.data('num');
+            const photo = $card.data('photo');
+
+            openPhotoPreviewModal(name, num, category, photo, id);
+        });
+
+        function openPhotoPreviewModal(name, num, category, photo, id) {
+            const isKetua = (category === 'ketua');
+            const catLabel = isKetua ? 'Calon Ketua Koperasi' : 'Calon Pengawas Koperasi';
+            const numPadded = String(num).padStart(2, '0');
+
+            currentPhotoCandidate = { category: category, id: id };
+
+            $('#modalPhotoCatBadge')
+                .text(`Kandidat ${numPadded}`)
+                .removeClass('bg-success bg-primary')
+                .addClass(isKetua ? 'bg-success' : 'bg-primary');
+
+            $('#modalPhotoCandName').text(name);
+            $('#modalPhotoCandSub').text(`${catLabel} • No. Urut ${numPadded}`);
+            $('#modalPhotoImage').attr('src', photo);
+
+            const isSelected = (isKetua && selectedKetua == id) || (!isKetua && selectedPengawas == id);
+            const $btnPick = $('#btnSelectFromPhotoModal');
+            $btnPick
+                .removeClass('btn-success btn-primary')
+                .addClass(isKetua ? 'btn-success' : 'btn-primary');
+
+            if (isSelected) {
+                $('#btnSelectFromPhotoText').html('<i class="fas fa-check-circle me-1"></i> Pilihan Anda Saat Ini');
+                $btnPick.addClass('disabled').prop('disabled', true);
+            } else {
+                $('#btnSelectFromPhotoText').html('<i class="fas fa-check me-1"></i> Pilih Calon Ini');
+                $btnPick.removeClass('disabled').prop('disabled', false);
+            }
+
+            modalPhoto.show();
+        }
+
+        $('#btnSelectFromPhotoModal').on('click', function() {
+            if (!currentPhotoCandidate) return;
+            const targetId = currentPhotoCandidate.id;
+            const targetCategory = currentPhotoCandidate.category;
+            modalPhoto.hide();
+
+            const $targetCard = $(`.candidate-card[data-category="${targetCategory}"][data-id="${targetId}"]`);
+            if ($targetCard.length) {
+                selectCandidateCard($targetCard);
+            }
         });
 
         function escapeHtml(str) {
