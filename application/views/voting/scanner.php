@@ -252,9 +252,9 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
                     </div>
                 </div>
 
-                <!-- Hidden RFID Wedge Input Form (Permanent Focus) -->
-                <form id="rfidForm" class="visually-hidden">
-                    <input type="password" id="rfidUid" name="rfid_uid" autocomplete="off" autofocus>
+                <!-- Hidden RFID Wedge Input Form (No virtual keyboard on tablets) -->
+                <form id="rfidForm" class="visually-hidden" aria-hidden="true">
+                    <input type="password" id="rfidUid" name="rfid_uid" autocomplete="off" inputmode="none" tabindex="-1">
                     <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </form>
             </div>
@@ -972,26 +972,57 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
             };
         }
 
-        // --- 6. RFID Form & Scanner Logic (Persistent Autofocus) ---
+        // --- 6. RFID Form & Scanner Logic (Global Keydown Buffer - No Soft Keyboard on Tablet) ---
         $(document).ready(function() {
             const $input = $('#rfidUid');
             const $form = $('#rfidForm');
             const $statusText = $('#statusText');
             let isProcessing = false;
 
-            function maintainFocus() {
-                if (!isProcessing && !document.querySelector('.modal.show')) {
-                    $input.focus();
-                }
-            }
+            // Global Keydown Buffer for RFID Wedge Reader (Physical/USB hardware emulation)
+            let rfidBuffer = '';
+            let lastKeyTime = 0;
+            const SCAN_TIMEOUT_MS = 1500; // Reset buffer if idle > 1.5 seconds
 
-            maintainFocus();
-            setInterval(maintainFocus, 1000);
-            $(document).on('click keydown', function(e) {
-                if (!$(e.target).closest('.modal, input, textarea, button').length) {
-                    maintainFocus();
+            window.addEventListener('keydown', function(e) {
+                // Ignore if user is currently typing in an actual visible input or textarea
+                if (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && e.target.id !== 'rfidUid')) {
+                    return;
                 }
-            });
+
+                const currentTime = Date.now();
+                if (currentTime - lastKeyTime > SCAN_TIMEOUT_MS) {
+                    rfidBuffer = '';
+                }
+                lastKeyTime = currentTime;
+
+                // RFID Reader signals completion with 'Enter' key
+                if (e.key === 'Enter') {
+                    const scannedUid = (rfidBuffer.trim() || $input.val().trim());
+                    if (scannedUid.length >= 4 && !isProcessing) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // If Visi & Misi modal is currently open, close it cleanly
+                        const modalEl = document.getElementById('modalCandidateDetail');
+                        if (modalEl && modalEl.classList.contains('show')) {
+                            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                            if (modalInstance) modalInstance.hide();
+                        }
+
+                        $input.val(scannedUid);
+                        rfidBuffer = '';
+                        $form.trigger('submit');
+                    }
+                    rfidBuffer = '';
+                    return;
+                }
+
+                // Buffer only alphanumeric characters typical for RFID card UIDs (0-9, a-z, A-Z)
+                if (/^[a-zA-Z0-9]$/.test(e.key)) {
+                    rfidBuffer += e.key;
+                }
+            }, true);
 
             $form.on('submit', function(e) {
                 e.preventDefault();
@@ -1019,6 +1050,7 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
                             if (window.set3DCardScanning) window.set3DCardScanning(false);
                             $statusText.text('Sensor RFID Siap Menerima Kartu');
                             $input.val('');
+                            rfidBuffer = '';
                             
                             Swal.fire({
                                 title: 'Pemberitahuan',
@@ -1026,8 +1058,6 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
                                 icon: 'warning',
                                 confirmButtonColor: '#0f5132',
                                 confirmButtonText: 'Kembali'
-                            }).then(() => {
-                                maintainFocus();
                             });
                         }
                     },
@@ -1036,6 +1066,7 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
                         if (window.set3DCardScanning) window.set3DCardScanning(false);
                         $statusText.text('Sensor RFID Siap Menerima Kartu');
                         $input.val('');
+                        rfidBuffer = '';
 
                         let msg = 'Terjadi gangguan jaringan atau sesi tidak sah.';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -1047,8 +1078,6 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
                             text: msg,
                             icon: 'error',
                             confirmButtonColor: '#0f5132'
-                        }).then(() => {
-                            maintainFocus();
                         });
                     }
                 });
