@@ -386,7 +386,7 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                                             <i class="fas fa-quote-left me-1 text-success"></i> Visi Calon:
                                         </div>
                                         <div class="confirm-vision-content" id="reviewVisionKetua">
-                                            <em>Silakan kembali ke Langkah 1 untuk memilih Calon Ketua.</em>
+                                            <em>Calon Ketua belum dipilih.</em>
                                         </div>
                                         <div class="mt-2 pt-1 border-top" id="wrapReviewDetailKetua" style="display: none;">
                                             <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-success fw-semibold" id="btnReviewDetailKetua" style="font-size: 0.8rem;">
@@ -395,10 +395,10 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                                         </div>
                                     </div>
 
-                                    <div class="mt-auto">
-                                        <button type="button" class="btn-change-choice" id="btnChangeKetua">
-                                            <i class="fas fa-undo me-1"></i> Ubah Pilihan Ketua
-                                        </button>
+                                    <div class="mt-auto pt-2 text-center">
+                                        <span class="badge bg-light text-success border border-success-subtle px-3 py-1.5 rounded-pill">
+                                            <i class="fas fa-lock me-1"></i> Pilihan Calon Terkunci
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -433,7 +433,7 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                                             <i class="fas fa-quote-left me-1 text-primary"></i> Visi Calon:
                                         </div>
                                         <div class="confirm-vision-content" id="reviewVisionPengawas">
-                                            <em>Silakan kembali ke Langkah 2 untuk memilih Calon Pengawas.</em>
+                                            <em>Calon Pengawas belum dipilih.</em>
                                         </div>
                                         <div class="mt-2 pt-1 border-top" id="wrapReviewDetailPengawas" style="display: none;">
                                             <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-primary fw-semibold" id="btnReviewDetailPengawas" style="font-size: 0.8rem;">
@@ -442,10 +442,10 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                                         </div>
                                     </div>
 
-                                    <div class="mt-auto">
-                                        <button type="button" class="btn-change-choice" id="btnChangePengawas">
-                                            <i class="fas fa-undo me-1"></i> Ubah Pilihan Pengawas
-                                        </button>
+                                    <div class="mt-auto pt-2 text-center">
+                                        <span class="badge bg-light text-primary border border-primary-subtle px-3 py-1.5 rounded-pill">
+                                            <i class="fas fa-lock me-1"></i> Pilihan Calon Terkunci
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -470,9 +470,9 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                  ======================================================== -->
             <div class="ballot-sticky-footer">
                 <div class="container-fluid px-lg-4 px-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <!-- Left: Back Button -->
-                    <div>
-                        <button type="button" class="btn-wizard-back" id="btnWizardPrev" style="visibility: hidden;">
+                    <!-- Left: Placeholder (Tombol Kembali dinonaktifkan sesuai aturan pemilu) -->
+                    <div class="d-none">
+                        <button type="button" class="btn-wizard-back d-none" id="btnWizardPrev" style="display: none !important;">
                             <i class="fas fa-arrow-left me-2"></i> Kembali
                         </button>
                     </div>
@@ -827,9 +827,14 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
             });
         }
 
-        // 4. Wizard Step Navigation Logic
+        // 4. Wizard Step Navigation Logic (Strictly Forward-Only)
         function goToStep(step) {
             if (step < 1 || step > 3) return;
+
+            // Aturan Pemilihan: Tidak boleh kembali ke tahapan/pilihan calon sebelumnya
+            if (step < currentStep) {
+                return;
+            }
 
             // Validation: Cannot advance to Step 2 without Ketua
             if (step === 2 && !selectedKetua) {
@@ -920,7 +925,7 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 $('#reviewNameKetua').text('Belum Memilih');
                 $('#reviewNumKetua').text('Kandidat No. -');
                 $('#reviewPhotoKetua').attr('src', '<?= base_url("assets/foto/default-avatar.svg"); ?>');
-                $('#reviewVisionKetua').html('<em>Silakan kembali ke Langkah 1 untuk memilih Calon Ketua.</em>');
+                $('#reviewVisionKetua').html('<em>Calon Ketua belum dipilih.</em>');
                 $('#wrapReviewDetailKetua').hide();
             }
 
@@ -938,13 +943,14 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 $('#reviewNamePengawas').text('Belum Memilih');
                 $('#reviewNumPengawas').text('Kandidat No. -');
                 $('#reviewPhotoPengawas').attr('src', '<?= base_url("assets/foto/default-avatar.svg"); ?>');
-                $('#reviewVisionPengawas').html('<em>Silakan kembali ke Langkah 2 untuk memilih Calon Pengawas.</em>');
+                $('#reviewVisionPengawas').html('<em>Calon Pengawas belum dipilih.</em>');
                 $('#wrapReviewDetailPengawas').hide();
             }
 
-            // C. Update Sticky Bottom Footer Controls
+            // C. Update Sticky Bottom Footer Controls (Tombol Kembali dinonaktifkan permanen)
+            $btnPrev.hide().css('visibility', 'hidden');
+
             if (currentStep === 1) {
-                $btnPrev.css('visibility', 'hidden');
                 $btnNext.show()
                         .removeClass('next-pengawas')
                         .addClass('next-ketua')
@@ -961,7 +967,6 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 $('#stickySelectionSummary').html(`Ketua: ${ketuaText}`);
                 $('#stickyStatusCircle').removeClass('is-complete');
             } else if (currentStep === 2) {
-                $btnPrev.css('visibility', 'visible').html('<i class="fas fa-arrow-left me-2"></i> Calon Ketua');
                 $btnNext.show()
                         .removeClass('next-ketua')
                         .addClass('next-pengawas')
@@ -979,7 +984,6 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 $('#stickySelectionSummary').html(`Ketua: ${ketuaText} • Pengawas: ${pengawasText}`);
                 $('#stickyStatusCircle').removeClass('is-complete');
             } else if (currentStep === 3) {
-                $btnPrev.css('visibility', 'visible').html('<i class="fas fa-arrow-left me-2"></i> Calon Pengawas');
                 $btnNext.hide();
                 $btnSubmit.show().prop('disabled', !(selectedKetua && selectedPengawas));
 
@@ -993,9 +997,9 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
             }
         }
 
-        // Stepper item click handlers
-        $('#stepperTab1').on('click', function() { goToStep(1); });
-        $('#stepperTab2').on('click', function() { goToStep(2); });
+        // Stepper item click handlers (Forward-only)
+        $('#stepperTab1').on('click', function() { if (currentStep === 1) goToStep(1); });
+        $('#stepperTab2').on('click', function() { if (currentStep <= 2) goToStep(2); });
         $('#stepperTab3').on('click', function() { goToStep(3); });
 
         // Bottom wizard button handlers
@@ -1006,17 +1010,6 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 goToStep(3);
             }
         });
-
-        $btnPrev.on('click', function() {
-            if (currentStep === 2) {
-                goToStep(1);
-            } else if (currentStep === 3) {
-                goToStep(2);
-            }
-        });
-
-        $('#btnChangeKetua').on('click', function() { goToStep(1); });
-        $('#btnChangePengawas').on('click', function() { goToStep(2); });
 
         // 5. Vision & Mission Modal Helper & Parsing
         function renderMissionList(missionRaw, isKetua) {
@@ -1129,7 +1122,7 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
             );
         });
 
-        // 6. Form Submission with Confirmation
+        // 6. Form Submission (Langsung simpan tanpa modal konfirmasi demi kerahasiaan bilik suara)
         $form.on('submit', function(e) {
             e.preventDefault();
 
@@ -1143,35 +1136,8 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 return;
             }
 
-            const safeKetua = escapeHtml(selectedKetuaName);
-            const safePengawas = escapeHtml(selectedPengawasName);
-
-            Swal.fire({
-                title: 'Konfirmasi Pilihan Suara',
-                html: `
-                    <div class="text-start p-3 bg-light rounded-3 border small">
-                        <div class="mb-2">
-                            <strong>Calon Ketua Terpilih:</strong><br>
-                            <span class="text-success fw-bold fs-6">${safeKetua}</span>
-                        </div>
-                        <div>
-                            <strong>Calon Pengawas Terpilih:</strong><br>
-                            <span class="text-primary fw-bold fs-6">${safePengawas}</span>
-                        </div>
-                    </div>
-                    <p class="mt-3 mb-0 text-muted small">Pilihan suara Anda dijamin asas LUBER JURDIL dan bersifat final setelah dikirim.</p>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#059669',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: '<i class="fas fa-check me-1"></i> Ya, Kirim Suara',
-                cancelButtonText: 'Periksa Ulang'
-            }).then((res) => {
-                if (res.isConfirmed) {
-                    executeSubmission();
-                }
-            });
+            // Langsung eksekusi penyimpanan ke blockchain ledger tanpa modal konfirmasi (menjaga privasi bilik suara)
+            executeSubmission();
         });
 
         function executeSubmission() {

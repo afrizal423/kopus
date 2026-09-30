@@ -367,7 +367,15 @@ body {
   box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.18);
 }
 
-/* Stepper Completed State */
+/* Stepper Completed State (Locked/Non-navigable backwards) */
+.stepper-item.completed {
+  cursor: default !important;
+}
+
+.stepper-item.completed:hover {
+  background-color: transparent !important;
+}
+
 .stepper-item.completed .stepper-circle {
   background-color: #dcfce7;
   border-color: #10b981;
