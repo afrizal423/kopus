@@ -442,6 +442,7 @@ class Admin extends CI_Controller {
         require_once APPPATH . 'libraries/PHPExcel.php';
 
         $stats = $this->Admin_model->get_turnout_stats();
+        $voted = $this->Admin_model->get_voted_voters();
         $unvoted = $this->Admin_model->get_unvoted_voters();
         $settings = $this->Admin_model->get_settings();
 
@@ -505,41 +506,86 @@ class Admin extends CI_Controller {
         $sheet1->getColumnDimension('A')->setAutoSize(true);
         $sheet1->getColumnDimension('B')->setAutoSize(true);
 
+        // Sheet 2: Daftar Anggota yang Sudah Menggunakan Hak Suara
         $sheet2 = $excel->createSheet(1);
-        $sheet2->setTitle('Daftar Belum Memilih');
+        $sheet2->setTitle('Daftar Sudah Memilih');
 
-        $sheet2->setCellValue('A1', 'DAFTAR ANGGOTA BELUM MENGGUNAKAN HAK SUARA');
-        $sheet2->setCellValue('A2', 'Total: ' . count($unvoted) . ' Anggota');
+        $sheet2->setCellValue('A1', 'DAFTAR ANGGOTA SUDAH MENGGUNAKAN HAK SUARA');
+        $sheet2->setCellValue('A2', 'Total: ' . count($voted) . ' Anggota');
         $sheet2->getStyle('A1')->getFont()->setBold(true)->setSize(13);
         $sheet2->getStyle('A2')->getFont()->setSize(10);
 
-        $headers = array('No', 'No. Anggota', 'Nama Anggota', 'Status Akun');
-        $cols = array('A', 'B', 'C', 'D');
+        $headersVoted = array('No', 'No. Anggota', 'Nama Anggota', 'Departemen', 'Waktu Memilih', 'Status');
+        $colsVoted = array('A', 'B', 'C', 'D', 'E', 'F');
 
-        for ($i = 0; $i < count($headers); $i++) {
-            $sheet2->setCellValue($cols[$i] . '4', $headers[$i]);
+        for ($i = 0; $i < count($headersVoted); $i++) {
+            $sheet2->setCellValue($colsVoted[$i] . '4', $headersVoted[$i]);
         }
-        $sheet2->getStyle('A4:D4')->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
-        $sheet2->getStyle('A4:D4')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('1E293B');
-        $sheet2->getStyle('A4:D4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet2->getStyle('A4:F4')->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+        $sheet2->getStyle('A4:F4')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('1E293B');
+        $sheet2->getStyle('A4:F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $rowIdx = 5;
         $no = 1;
-        foreach ($unvoted as $item) {
+        foreach ($voted as $item) {
             $sheet2->setCellValue('A' . $rowIdx, $no++);
             $sheet2->setCellValueExplicit('B' . $rowIdx, (string)$item['member_number'], PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet2->setCellValue('C' . $rowIdx, $item['name']);
-            $sheet2->setCellValue('D' . $rowIdx, strtoupper($item['status']));
+            $sheet2->setCellValue('D' . $rowIdx, !empty($item['department']) ? $item['department'] : '-');
+            $sheet2->setCellValue('E' . $rowIdx, !empty($item['voted_at']) ? date('d/m/Y H:i:s', strtotime($item['voted_at'])) : '-');
+            $sheet2->setCellValue('F' . $rowIdx, 'SUDAH MEMILIH');
 
             $sheet2->getStyle('A' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
             $sheet2->getStyle('B' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
             $sheet2->getStyle('D' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $sheet2->getStyle('A' . $rowIdx . ':D' . $rowIdx)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $sheet2->getStyle('E' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet2->getStyle('F' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet2->getStyle('A' . $rowIdx . ':F' . $rowIdx)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
             $rowIdx++;
         }
 
-        foreach ($cols as $col) {
+        foreach ($colsVoted as $col) {
             $sheet2->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Sheet 3: Daftar Anggota yang Belum Menggunakan Hak Suara
+        $sheet3 = $excel->createSheet(2);
+        $sheet3->setTitle('Daftar Belum Memilih');
+
+        $sheet3->setCellValue('A1', 'DAFTAR ANGGOTA BELUM MENGGUNAKAN HAK SUARA');
+        $sheet3->setCellValue('A2', 'Total: ' . count($unvoted) . ' Anggota');
+        $sheet3->getStyle('A1')->getFont()->setBold(true)->setSize(13);
+        $sheet3->getStyle('A2')->getFont()->setSize(10);
+
+        $headersUnvoted = array('No', 'No. Anggota', 'Nama Anggota', 'Departemen', 'Status Akun');
+        $colsUnvoted = array('A', 'B', 'C', 'D', 'E');
+
+        for ($i = 0; $i < count($headersUnvoted); $i++) {
+            $sheet3->setCellValue($colsUnvoted[$i] . '4', $headersUnvoted[$i]);
+        }
+        $sheet3->getStyle('A4:E4')->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+        $sheet3->getStyle('A4:E4')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('1E293B');
+        $sheet3->getStyle('A4:E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        $rowIdx = 5;
+        $no = 1;
+        foreach ($unvoted as $item) {
+            $sheet3->setCellValue('A' . $rowIdx, $no++);
+            $sheet3->setCellValueExplicit('B' . $rowIdx, (string)$item['member_number'], PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet3->setCellValue('C' . $rowIdx, $item['name']);
+            $sheet3->setCellValue('D' . $rowIdx, !empty($item['department']) ? $item['department'] : '-');
+            $sheet3->setCellValue('E' . $rowIdx, strtoupper($item['status']));
+
+            $sheet3->getStyle('A' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet3->getStyle('B' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet3->getStyle('D' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet3->getStyle('E' . $rowIdx)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet3->getStyle('A' . $rowIdx . ':E' . $rowIdx)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+            $rowIdx++;
+        }
+
+        foreach ($colsUnvoted as $col) {
+            $sheet3->getColumnDimension($col)->setAutoSize(true);
         }
 
         $excel->setActiveSheetIndex(0);

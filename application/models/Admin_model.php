@@ -248,7 +248,7 @@ class Admin_model extends CI_Model {
         $clean = trim((string)$search);
         if (!empty($clean)) {
             $q = $this->db->query(
-                "SELECT id, member_number, name, status, created_at 
+                "SELECT id, member_number, name, department, status, created_at 
                  FROM voters 
                  WHERE has_voted = 0 AND (name LIKE ? OR member_number LIKE ?) 
                  ORDER BY member_number ASC",
@@ -256,10 +256,31 @@ class Admin_model extends CI_Model {
             );
         } else {
             $q = $this->db->query(
-                "SELECT id, member_number, name, status, created_at 
+                "SELECT id, member_number, name, department, status, created_at 
                  FROM voters 
                  WHERE has_voted = 0 
                  ORDER BY member_number ASC"
+            );
+        }
+        return $q->result_array();
+    }
+
+    public function get_voted_voters($search = '') {
+        $clean = trim((string)$search);
+        if (!empty($clean)) {
+            $q = $this->db->query(
+                "SELECT id, member_number, name, department, status, voted_at 
+                 FROM voters 
+                 WHERE has_voted = 1 AND (name LIKE ? OR member_number LIKE ?) 
+                 ORDER BY voted_at ASC, member_number ASC",
+                array('%' . $clean . '%', '%' . $clean . '%')
+            );
+        } else {
+            $q = $this->db->query(
+                "SELECT id, member_number, name, department, status, voted_at 
+                 FROM voters 
+                 WHERE has_voted = 1 
+                 ORDER BY voted_at ASC, member_number ASC"
             );
         }
         return $q->result_array();
