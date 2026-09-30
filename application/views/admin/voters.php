@@ -148,13 +148,24 @@
                                     <td class="small text-muted">
                                         <?= (!empty($v['voted_at'])) ? date('d/m/Y H:i:s', strtotime($v['voted_at'])) : '-'; ?>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
+                                        <button type="button" class="btn btn-outline-primary btn-sm btn-edit-voter py-1 px-2"
+                                            data-id="<?= $v['id']; ?>"
+                                            data-rfid="<?= htmlspecialchars($v['rfid_uid']); ?>"
+                                            data-member="<?= htmlspecialchars($v['member_number']); ?>"
+                                            data-name="<?= htmlspecialchars($v['name']); ?>"
+                                            data-department="<?= htmlspecialchars($v['department'] ?? ''); ?>"
+                                            title="Edit Data Pemilih & Kartu RFID">
+                                            <i class="fas fa-edit me-1"></i> Edit
+                                        </button>
                                         <?php if ((int)$v['has_voted'] === 1): ?>
-                                        <button type="button" class="btn btn-outline-warning btn-sm btn-reset-voter" data-id="<?= $v['id']; ?>" data-name="<?= htmlspecialchars($v['name']); ?>" title="Reset status hak suara (Jika terjadi kendala teknis)">
+                                        <button type="button" class="btn btn-outline-warning btn-sm btn-reset-voter py-1 px-2 ms-1" data-id="<?= $v['id']; ?>" data-name="<?= htmlspecialchars($v['name']); ?>" title="Reset status hak suara (Jika terjadi kendala teknis)">
                                             <i class="fas fa-undo me-1"></i> Reset
                                         </button>
                                         <?php else: ?>
-                                        <span class="text-muted small">-</span>
+                                        <button type="button" class="btn btn-outline-danger btn-sm btn-delete-voter py-1 px-2 ms-1" data-id="<?= $v['id']; ?>" data-name="<?= htmlspecialchars($v['name']); ?>" title="Hapus pemilih dari DPT">
+                                            <i class="fas fa-trash-alt me-1"></i> Hapus
+                                        </button>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -192,7 +203,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">NIK (No. Induk Karyawan)</label>
+                            <label class="form-label small fw-semibold">NIK (No. Induk Karyawan / No. Anggota)</label>
                             <input type="text" name="member_number" class="form-control" placeholder="019xxx" required>
                         </div>
 
@@ -210,6 +221,55 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-kop-primary btn-sm">Simpan Anggota</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Anggota & Kartu RFID -->
+    <div class="modal fade" id="modalEditVoter" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="<?= base_url('admin/voter_save'); ?>" method="POST">
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                    <input type="hidden" name="voter_id" id="editVoterId" value="">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Edit Data Pemilih &amp; Kartu RFID</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="p-3 bg-light rounded-3 border mb-3 small text-muted">
+                            <i class="fas fa-info-circle text-primary me-1"></i>
+                            Anda dapat memperbarui data anggota maupun men-tap kartu RFID baru untuk mengganti kartu yang hilang/rusak.
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">UID Kartu RFID</label>
+                            <input type="text" name="rfid_uid" id="editRfidInput" class="form-control font-monospace" placeholder="Tempelkan kartu RFID baru..." required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">NIK (No. Induk Karyawan / No. Anggota)</label>
+                            <input type="text" name="member_number" id="editMemberNumber" class="form-control" placeholder="019xxx" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Nama Lengkap Anggota</label>
+                            <input type="text" name="name" id="editName" class="form-control" placeholder="Nama lengkap anggota" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Departemen</label>
+                            <input type="text" name="department" id="editDepartment" class="form-control" placeholder="Contoh: Produksi, IT, HRD, Keuangan, dsb.">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -234,6 +294,24 @@
             document.getElementById('modalRfidInput').focus();
         });
 
+        const modalEditEl = document.getElementById('modalEditVoter');
+        modalEditEl.addEventListener('shown.bs.modal', function () {
+            document.getElementById('editRfidInput').focus();
+        });
+
+        // Trigger Edit Modal
+        $('.btn-edit-voter').on('click', function() {
+            const $btn = $(this);
+            $('#editVoterId').val($btn.data('id'));
+            $('#editRfidInput').val($btn.data('rfid'));
+            $('#editMemberNumber').val($btn.data('member'));
+            $('#editName').val($btn.data('name'));
+            $('#editDepartment').val($btn.data('department'));
+
+            const editModal = new bootstrap.Modal(document.getElementById('modalEditVoter'));
+            editModal.show();
+        });
+
         $('.btn-reset-voter').on('click', function() {
             const id = $(this).data('id');
             const name = escapeHtml(String($(this).data('name') || ''));
@@ -251,6 +329,28 @@
                 if (res.isConfirmed) {
                     const $form = $('#actionPostForm');
                     $form.attr('action', '<?= base_url("admin/voter_reset/"); ?>' + id);
+                    $form.submit();
+                }
+            });
+        });
+
+        $('.btn-delete-voter').on('click', function() {
+            const id = $(this).data('id');
+            const name = escapeHtml(String($(this).data('name') || ''));
+
+            Swal.fire({
+                title: 'Hapus Pemilih dari DPT?',
+                html: `Apakah Anda yakin ingin menghapus pemilih <b>"${name}"</b> dari Daftar Pemilih Tetap?<br><br><span class="text-danger small">Tindakan ini tidak dapat dibatalkan.</span>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Hapus Pemilih',
+                cancelButtonText: 'Batal'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    const $form = $('#actionPostForm');
+                    $form.attr('action', '<?= base_url("admin/voter_delete/"); ?>' + id);
                     $form.submit();
                 }
             });

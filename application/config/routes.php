@@ -65,6 +65,7 @@ $route['admin/voters'] = 'admin/voters';
 $route['admin/voter_save'] = 'admin/voter_save';
 $route['admin/voter_toggle/(:num)'] = 'admin/voter_toggle/$1';
 $route['admin/voter_reset/(:num)'] = 'admin/voter_reset/$1';
+$route['admin/voter_delete/(:num)'] = 'admin/voter_delete/$1';
 $route['admin/verify_tamper'] = 'admin/verify_tamper';
 $route['admin/settings'] = 'admin/settings';
 $route['admin/settings_save'] = 'admin/settings_save';

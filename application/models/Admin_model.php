@@ -151,6 +151,53 @@ class Admin_model extends CI_Model {
         return array('status' => true, 'message' => 'Anggota berhasil ditambahkan ke DPT.');
     }
 
+    public function get_voter_by_id($id) {
+        $query = $this->db->query("SELECT * FROM voters WHERE id = ? LIMIT 1", array((int)$id));
+        return $query->row_array();
+    }
+
+    public function update_voter($id, $data) {
+        $vid = (int)$id;
+
+        if (!empty($data['rfid_uid'])) {
+            $check = $this->db->query("SELECT id FROM voters WHERE rfid_uid = ? AND id != ?", array($data['rfid_uid'], $vid));
+            if ($check->num_rows() > 0) {
+                return array('status' => false, 'message' => 'Kartu RFID ini sudah digunakan oleh pemilih lain.');
+            }
+        }
+
+        if (!empty($data['member_number'])) {
+            $check_no = $this->db->query("SELECT id FROM voters WHERE member_number = ? AND id != ?", array($data['member_number'], $vid));
+            if ($check_no->num_rows() > 0) {
+                return array('status' => false, 'message' => 'Nomor anggota / NIK ini sudah terdaftar pada pemilih lain.');
+            }
+        }
+
+        $this->db->where('id', $vid);
+        $this->db->update('voters', $data);
+        return array('status' => true, 'message' => 'Data pemilih berhasil diperbarui.');
+    }
+
+    public function delete_voter($id) {
+        $vid = (int)$id;
+        $check = $this->db->query("SELECT has_voted, name FROM voters WHERE id = ? LIMIT 1", array($vid))->row_array();
+        if (!$check) {
+            return array('status' => false, 'message' => 'Data pemilih tidak ditemukan.');
+        }
+
+        if ((int)$check['has_voted'] === 1) {
+            return array('status' => false, 'message' => 'Pemilih yang sudah menggunakan hak suara tidak dapat dihapus demi menjaga integritas data audit dan ledger.');
+        }
+
+        $check_votes = $this->db->query("SELECT COUNT(*) AS total FROM votes WHERE voter_id = ?", array($vid))->row();
+        if ($check_votes && (int)$check_votes->total > 0) {
+            return array('status' => false, 'message' => 'Pemilih memiliki rekam suara tercatat dan tidak dapat dihapus.');
+        }
+
+        $this->db->query("DELETE FROM voters WHERE id = ?", array($vid));
+        return array('status' => true, 'message' => 'Pemilih "' . $check['name'] . '" berhasil dihapus dari DPT.');
+    }
+
     public function toggle_voter_status($id) {
         $query = $this->db->query("SELECT status FROM voters WHERE id = ? LIMIT 1", array((int)$id));
         $row = $query->row_array();

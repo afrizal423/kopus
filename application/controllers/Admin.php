@@ -228,6 +228,7 @@ class Admin extends CI_Controller {
             return;
         }
 
+        $voter_id = (int)$this->input->post('voter_id');
         $rfid_uid = trim((string)$this->input->post('rfid_uid', TRUE));
         $name = trim((string)$this->input->post('name', TRUE));
         $member_number = trim((string)$this->input->post('member_number', TRUE));
@@ -239,20 +240,32 @@ class Admin extends CI_Controller {
             return;
         }
 
-        $res = $this->Admin_model->create_voter(array(
+        $payload = array(
             'rfid_uid' => $rfid_uid,
             'name' => $name,
             'member_number' => $member_number,
-            'department' => $department,
-            'status' => 'active'
-        ));
+            'department' => $department
+        );
 
-        if ($res['status']) {
-            $log_info = 'Mendaftarkan kartu RFID baru untuk ' . $name . (!empty($department) ? ' (' . $department . ')' : '');
-            $this->Admin_model->log_audit('CREATE_VOTER', $this->session->userdata('admin_username'), $log_info);
-            $this->session->set_flashdata('success', $res['message']);
+        if ($voter_id > 0) {
+            $res = $this->Admin_model->update_voter($voter_id, $payload);
+            if ($res['status']) {
+                $log_info = 'Memperbarui data pemilih ID #' . $voter_id . ' (' . $name . ')';
+                $this->Admin_model->log_audit('UPDATE_VOTER', $this->session->userdata('admin_username'), $log_info);
+                $this->session->set_flashdata('success', $res['message']);
+            } else {
+                $this->session->set_flashdata('error', $res['message']);
+            }
         } else {
-            $this->session->set_flashdata('error', $res['message']);
+            $payload['status'] = 'active';
+            $res = $this->Admin_model->create_voter($payload);
+            if ($res['status']) {
+                $log_info = 'Mendaftarkan kartu RFID baru untuk ' . $name . (!empty($department) ? ' (' . $department . ')' : '');
+                $this->Admin_model->log_audit('CREATE_VOTER', $this->session->userdata('admin_username'), $log_info);
+                $this->session->set_flashdata('success', $res['message']);
+            } else {
+                $this->session->set_flashdata('error', $res['message']);
+            }
         }
 
         redirect('admin/voters');
@@ -282,6 +295,28 @@ class Admin extends CI_Controller {
         }
         $this->Admin_model->reset_voter_vote((int)$id, $this->session->userdata('admin_username'));
         $this->session->set_flashdata('success', 'Status pemilih telah direset (belum memilih). Aktivitas ini telah dicatat ke audit log.');
+        redirect('admin/voters');
+    }
+
+    public function voter_delete($id) {
+        $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
+
+        $vid = (int)$id;
+        $res = $this->Admin_model->delete_voter($vid);
+
+        if ($res['status']) {
+            $this->Admin_model->log_audit('DELETE_VOTER', $this->session->userdata('admin_username'), 'Menghapus data pemilih ID #' . $vid);
+            $this->session->set_flashdata('success', $res['message']);
+        } else {
+            $this->session->set_flashdata('error', $res['message']);
+        }
+
         redirect('admin/voters');
     }
 
