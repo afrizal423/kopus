@@ -59,7 +59,11 @@ if (empty($all_candidates) && !empty($ketua_candidates)) {
                     </span>
                 </div>
 
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn-kiosk-fullscreen" id="btnFullscreenToggle" title="Mode Layar Penuh (Fullscreen)" aria-label="Mode Layar Penuh">
+                        <i class="fas fa-expand me-1" id="iconFullscreen"></i>
+                        <span id="textFullscreen" class="d-none d-sm-inline">Layar Penuh</span>
+                    </button>
                     <span class="badge <?= ($settings['election_status'] === 'open') ? 'bg-success' : 'bg-warning text-dark'; ?> px-3 py-2">
                         <?= ($settings['election_status'] === 'open') ? 'Bilik Suara Terbuka' : 'Sesi Dijeda'; ?>
                     </span>

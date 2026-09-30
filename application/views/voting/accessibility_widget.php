@@ -177,6 +177,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <input class="form-check-input" type="checkbox" role="switch" id="a11yGuideSwitch">
                         </div>
                     </div>
+
+                    <!-- Mode Layar Penuh (Fullscreen Kiosk) -->
+                    <div class="a11y-switch-row">
+                        <div>
+                            <strong class="d-block text-dark" style="font-size: 0.875rem;">Mode Layar Penuh (Fullscreen)</strong>
+                            <small class="text-muted" style="font-size: 0.75rem;">Memaksimalkan layar bilik suara tablet tanpa bilah browser</small>
+                        </div>
+                        <div class="form-check form-switch m-0 ms-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="a11yFullscreenSwitch">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -200,6 +211,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     'use strict';
 
     const STORAGE_KEY = 'kopus_a11y_prefs';
+    const FULLSCREEN_KEY = 'kopus_fullscreen_pref';
     const fontSteps = ['normal', 'large', 'xlarge', 'xxlarge'];
 
     // Default configuration
@@ -208,8 +220,115 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         contrast: 'default',
         bold: false,
         spacing: false,
-        readingGuide: false
+        readingGuide: false,
+        fullscreen: false
     };
+
+    // --- Fullscreen Engine (Persistence via LocalStorage) ---
+    function isFullscreenActive() {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    }
+
+    function requestFullscreenMode() {
+        const el = document.documentElement;
+        const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (rfs) {
+            return rfs.call(el);
+        }
+        return Promise.reject(new Error('Fullscreen not supported'));
+    }
+
+    function exitFullscreenMode() {
+        const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (efs) {
+            return efs.call(document);
+        }
+        return Promise.reject(new Error('Fullscreen not supported'));
+    }
+
+    function syncFullscreenUI() {
+        const isFs = isFullscreenActive();
+        
+        // Sync all toggle buttons on page
+        const $btns = $('.btn-fullscreen-toggle, .btn-kiosk-fullscreen, #btnFullscreenToggle');
+        $btns.each(function() {
+            const $btn = $(this);
+            const $icon = $btn.find('.fa-expand, .fa-compress, #iconFullscreen');
+            const $text = $btn.find('#textFullscreen');
+            
+            if (isFs) {
+                $icon.removeClass('fa-expand').addClass('fa-compress');
+                if ($text.length) $text.text('Perkecil');
+                $btn.attr('title', 'Keluar Layar Penuh (ESC)');
+                $btn.addClass('is-fullscreen');
+            } else {
+                $icon.removeClass('fa-compress').addClass('fa-expand');
+                if ($text.length) $text.text('Layar Penuh');
+                $btn.attr('title', 'Mode Layar Penuh (Fullscreen)');
+                $btn.removeClass('is-fullscreen');
+            }
+        });
+
+        // Sync modal switch
+        $('#a11yFullscreenSwitch').prop('checked', isFs);
+    }
+
+    function toggleFullscreen() {
+        if (isFullscreenActive()) {
+            localStorage.setItem(FULLSCREEN_KEY, '0');
+            prefs.fullscreen = false;
+            savePreferences();
+            exitFullscreenMode().then(syncFullscreenUI).catch(function() {});
+        } else {
+            localStorage.setItem(FULLSCREEN_KEY, '1');
+            prefs.fullscreen = true;
+            savePreferences();
+            requestFullscreenMode().then(syncFullscreenUI).catch(function() {});
+        }
+    }
+
+    function initFullscreenPersistence() {
+        const shouldBeFs = localStorage.getItem(FULLSCREEN_KEY) === '1' || prefs.fullscreen === true;
+
+        if (shouldBeFs && !isFullscreenActive()) {
+            // Attempt direct request if browser session allows it
+            requestFullscreenMode().then(syncFullscreenUI).catch(function() {});
+
+            // Auto-restore fullscreen on the very first user interaction (touch / click / keydown)
+            function autoRestoreOnUserGesture() {
+                if ((localStorage.getItem(FULLSCREEN_KEY) === '1' || prefs.fullscreen === true) && !isFullscreenActive()) {
+                    requestFullscreenMode().then(function() {
+                        syncFullscreenUI();
+                    }).catch(function() {});
+                }
+                if (isFullscreenActive()) {
+                    document.removeEventListener('click', autoRestoreOnUserGesture, true);
+                    document.removeEventListener('touchstart', autoRestoreOnUserGesture, true);
+                    document.removeEventListener('keydown', autoRestoreOnUserGesture, true);
+                }
+            }
+            document.addEventListener('click', autoRestoreOnUserGesture, true);
+            document.addEventListener('touchstart', autoRestoreOnUserGesture, true);
+            document.addEventListener('keydown', autoRestoreOnUserGesture, true);
+        }
+
+        // Listen for vendor fullscreen events
+        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(function(evt) {
+            document.addEventListener(evt, syncFullscreenUI);
+        });
+
+        // Listen for ESC key to update localStorage when user exits manually
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                localStorage.setItem(FULLSCREEN_KEY, '0');
+                prefs.fullscreen = false;
+                savePreferences();
+                setTimeout(syncFullscreenUI, 100);
+            }
+        });
+
+        syncFullscreenUI();
+    }
 
     // Load saved preferences
     function loadPreferences() {
@@ -218,6 +337,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             if (raw) {
                 const parsed = JSON.parse(raw);
                 prefs = Object.assign({}, prefs, parsed);
+            }
+            if (localStorage.getItem(FULLSCREEN_KEY) === '1') {
+                prefs.fullscreen = true;
             }
         } catch (e) {
             console.error('Failed reading a11y preferences', e);
@@ -296,12 +418,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         $('#a11yBoldSwitch').prop('checked', !!prefs.bold);
         $('#a11ySpacingSwitch').prop('checked', !!prefs.spacing);
         $('#a11yGuideSwitch').prop('checked', !!prefs.readingGuide);
+        $('#a11yFullscreenSwitch').prop('checked', isFullscreenActive());
     }
 
     // Initialize on document ready
     $(document).ready(function() {
         loadPreferences();
         applyPreferences();
+        initFullscreenPersistence();
 
         // 1. Font Size Button Click
         $(document).on('click', '.a11y-font-btn', function() {
@@ -359,20 +483,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             applyPreferences();
         });
 
-        // 5. Reset Button
+        // 5. Fullscreen Toggle Button & Switch
+        $(document).on('click', '#btnFullscreenToggle', function(e) {
+            e.preventDefault();
+            toggleFullscreen();
+        });
+
+        $(document).on('change', '#a11yFullscreenSwitch', function() {
+            toggleFullscreen();
+        });
+
+        // 6. Reset Button
         $(document).on('click', '#a11yResetBtn', function() {
             prefs = {
                 fontSize: 'normal',
                 contrast: 'default',
                 bold: false,
                 spacing: false,
-                readingGuide: false
+                readingGuide: false,
+                fullscreen: false
             };
+            localStorage.setItem(FULLSCREEN_KEY, '0');
             savePreferences();
             applyPreferences();
+            if (isFullscreenActive()) {
+                exitFullscreenMode().then(syncFullscreenUI).catch(function() {});
+            }
         });
 
-        // 6. Reading Guide Pointer Movement
+        // 7. Reading Guide Pointer Movement
         const $guide = $('#a11yReadingGuide');
         $(window).on('pointermove touchmove', function(e) {
             if (!prefs.readingGuide) return;
@@ -391,7 +530,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     // Make engine methods accessible globally if needed
     window.KopusA11y = {
         apply: applyPreferences,
-        getPrefs: function() { return Object.assign({}, prefs); }
+        getPrefs: function() { return Object.assign({}, prefs); },
+        toggleFullscreen: toggleFullscreen,
+        isFullscreen: isFullscreenActive
     };
 })();
 </script>

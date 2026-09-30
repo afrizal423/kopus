@@ -217,6 +217,46 @@ body {
   border-color: #cbd5e1;
 }
 
+.btn-fullscreen-toggle,
+.btn-kiosk-fullscreen {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-fullscreen-toggle:hover,
+.btn-kiosk-fullscreen:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btn-fullscreen-toggle.is-fullscreen,
+.btn-kiosk-fullscreen.is-fullscreen {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #059669;
+}
+
+.btn-fullscreen-toggle.is-fullscreen:hover,
+.btn-kiosk-fullscreen.is-fullscreen:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #047857;
+}
+
 /* Page Sub-Header */
 .event-pill-badge {
   display: inline-flex;
@@ -2221,11 +2261,27 @@ html.a11y-contrast-dark #modalPhotoCandSub {
 html.a11y-contrast-dark .badge-voter-member,
 html.a11y-contrast-dark .event-pill-badge,
 html.a11y-contrast-dark .ballot-timer-box,
+html.a11y-contrast-dark .btn-fullscreen-toggle,
+html.a11y-contrast-dark .btn-kiosk-fullscreen,
 html.a11y-contrast-dark .category-quota-badge,
 html.a11y-contrast-dark .badge-status-picked {
   background: #1e293b !important;
   color: #f1f5f9 !important;
   border-color: #475569 !important;
+}
+
+html.a11y-contrast-dark .btn-fullscreen-toggle:hover,
+html.a11y-contrast-dark .btn-kiosk-fullscreen:hover {
+  background: #334155 !important;
+  color: #ffffff !important;
+  border-color: #64748b !important;
+}
+
+html.a11y-contrast-dark .btn-fullscreen-toggle.is-fullscreen,
+html.a11y-contrast-dark .btn-kiosk-fullscreen.is-fullscreen {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+  color: #34d399 !important;
 }
 
 /* --- 3. High Contrast Yellow-on-Black (WCAG AAA - Lansia & Low Vision) --- */
@@ -2492,6 +2548,8 @@ html.a11y-contrast-yellow .btn-card-vision,
 html.a11y-contrast-yellow .btn-card-action,
 html.a11y-contrast-yellow .btn-change-choice,
 html.a11y-contrast-yellow .btn-slider-nav,
+html.a11y-contrast-yellow .btn-fullscreen-toggle,
+html.a11y-contrast-yellow .btn-kiosk-fullscreen,
 html.a11y-contrast-yellow .btn-cancel-exit {
   background-color: #000000 !important;
   color: #facc15 !important;
@@ -2501,6 +2559,10 @@ html.a11y-contrast-yellow .btn-cancel-exit {
 html.a11y-contrast-yellow .btn:hover,
 html.a11y-contrast-yellow button:hover,
 html.a11y-contrast-yellow .btn-cancel-exit:hover,
+html.a11y-contrast-yellow .btn-fullscreen-toggle:hover,
+html.a11y-contrast-yellow .btn-kiosk-fullscreen:hover,
+html.a11y-contrast-yellow .btn-fullscreen-toggle.is-fullscreen,
+html.a11y-contrast-yellow .btn-kiosk-fullscreen.is-fullscreen,
 html.a11y-contrast-yellow .btn-slider-nav:hover:not(:disabled),
 html.a11y-contrast-yellow .btn-card-vision:hover,
 html.a11y-contrast-yellow .btn-card-action:hover {

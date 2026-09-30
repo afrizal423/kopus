@@ -74,11 +74,15 @@ $election_title = !empty($settings['election_title']) ? $settings['election_titl
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
                 <div class="ballot-timer-box" id="timerBox" title="Sisa batas waktu bilik suara">
                     <i class="far fa-clock"></i>
                     <span>SISA WAKTU: <strong id="timerCountdown">--:--</strong></span>
                 </div>
+                <button type="button" class="btn-fullscreen-toggle" id="btnFullscreenToggle" title="Mode Layar Penuh (Fullscreen)" aria-label="Mode Layar Penuh">
+                    <i class="fas fa-expand me-1" id="iconFullscreen"></i>
+                    <span id="textFullscreen" class="d-none d-md-inline">Layar Penuh</span>
+                </button>
                 <a href="<?= base_url('voting/cancel'); ?>" class="btn-cancel-exit" id="btnCancel">
                     <i class="fas fa-times me-1"></i> Batal &amp; Keluar
                 </a>
