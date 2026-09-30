@@ -124,6 +124,9 @@
                         <span class="badge px-3 py-2 <?= ($settings['election_status'] === 'open') ? 'bg-success' : (($settings['election_status'] === 'paused') ? 'bg-warning text-dark' : 'bg-danger'); ?>">
                             Status: <?= strtoupper($settings['election_status']); ?>
                         </span>
+                        <button type="button" class="btn btn-outline-danger btn-sm fw-semibold" id="btnResetAllVotes" title="Reset seluruh pemilih dan suara pemilihan (Khusus Simulasi / PSU)">
+                            <i class="fas fa-undo-alt me-1"></i> Reset Pemilihan
+                        </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalChangePassword">
                             <i class="fas fa-key me-1"></i> Ganti Password
                         </button>
@@ -630,6 +633,41 @@ UPDATE election_settings SET setting_value = 'open' WHERE setting_key = 'electio
                 error: function() {
                     $btn.prop('disabled', false).html('<i class="fas fa-sync-alt me-1"></i> Uji Keutuhan Ledger');
                     Swal.fire('Error', 'Gagal menghubungi server verifikasi.', 'error');
+                }
+            });
+        });
+
+        // Reset Election Votes Handler (Simulasi / PSU)
+        $('#btnResetAllVotes').on('click', function() {
+            Swal.fire({
+                title: 'Reset Seluruh Suara Pemilihan?',
+                html: `Apakah Anda yakin ingin <b>mereset seluruh data pemilihan</b>?<br><br>
+                       <div class="text-start bg-light p-3 rounded border small mb-2 text-dark">
+                         <ul class="mb-0 ps-3">
+                           <li>Semua pemilih yang sudah memilih akan dikembalikan ke status <b>Belum Memilih</b>.</li>
+                           <li>Seluruh data suara di bilik suara akan <b>dikosongkan (0 suara)</b>.</li>
+                           <li>Rantai HMAC / Ledger Kriptografi akan dimulai kembali dari <b>Genesis Block</b>.</li>
+                         </ul>
+                       </div>
+                       <span class="text-danger small fw-semibold"><i class="fas fa-shield-alt me-1"></i>Tindakan ini diawasi dan dicatat permanen dalam Jejak Audit (Audit Logs).</span>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-undo-alt me-1"></i> Ya, Reset Semua Suara',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    const $form = $('<form>', {
+                        action: '<?= base_url("admin/reset_election_votes"); ?>',
+                        method: 'POST'
+                    }).append($('<input>', {
+                        type: 'hidden',
+                        name: '<?= $this->security->get_csrf_token_name(); ?>',
+                        value: '<?= $this->security->get_csrf_hash(); ?>'
+                    }));
+                    $('body').append($form);
+                    $form.submit();
                 }
             });
         });

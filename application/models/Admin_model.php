@@ -217,6 +217,35 @@ class Admin_model extends CI_Model {
         return true;
     }
 
+    public function reset_all_votes($actor_username) {
+        $voted_count = (int)$this->db->query("SELECT COUNT(*) AS total FROM voters WHERE has_voted = 1")->row()->total;
+        $votes_count = (int)$this->db->query("SELECT COUNT(*) AS total FROM votes")->row()->total;
+
+        // 1. Reset all voters status
+        $this->db->query("UPDATE voters SET has_voted = 0, voted_at = NULL");
+
+        // 2. Clean votes table and reset auto-increment
+        $this->db->query("DELETE FROM votes");
+        $this->db->query("ALTER TABLE votes AUTO_INCREMENT = 1");
+
+        // 3. Regenerate ledger secret salt for fresh Genesis block
+        $new_salt = bin2hex(random_bytes(16));
+        $this->db->query("UPDATE election_settings SET setting_value = ? WHERE setting_key = 'ledger_secret_salt'", array($new_salt));
+
+        // 4. Ensure election status is open
+        $this->db->query("UPDATE election_settings SET setting_value = 'open' WHERE setting_key = 'election_status'");
+
+        // 5. Strictly record in audit log
+        $details = "Reset seluruh data pemilihan (Simulasi/PSU). Total {$voted_count} pemilih direset ke status belum memilih dan {$votes_count} suara dibersihkan.";
+        $this->log_audit('RESET_ALL_VOTES', $actor_username, $details);
+
+        return array(
+            'status' => true,
+            'voted_count' => $voted_count,
+            'votes_count' => $votes_count
+        );
+    }
+
     public function log_audit($event_type, $actor, $details = '') {
         $ip = $this->input->ip_address();
         $this->db->query(

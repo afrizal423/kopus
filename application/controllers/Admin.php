@@ -320,6 +320,20 @@ class Admin extends CI_Controller {
         redirect('admin/voters');
     }
 
+    public function reset_election_votes() {
+        $this->require_auth();
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            return $this->output
+                ->set_status_header(405)
+                ->set_content_type('text/plain')
+                ->set_output('405 Method Not Allowed - Aksi mutasi wajib menggunakan method POST');
+        }
+
+        $res = $this->Admin_model->reset_all_votes($this->session->userdata('admin_username'));
+        $this->session->set_flashdata('success', "Seluruh data pemilihan berhasil direset. Sebanyak {$res['voted_count']} pemilih kembali ke status belum memilih dan {$res['votes_count']} suara telah dibersihkan.");
+        redirect('admin/index');
+    }
+
     public function verify_tamper() {
         $this->require_auth();
         $result = $this->Voting_model->verify_ledger_integrity();
