@@ -1754,7 +1754,7 @@ html.a11y-contrast-dark .ballot-sticky-footer,
 html.a11y-contrast-dark .modal-content,
 html.a11y-contrast-dark .review-card,
 html.a11y-contrast-dark .candidate-card,
-html.a11y-contrast-dark .ballot-stepper-wrapper,
+html.a11y-contrast-dark .ballot-stepper,
 html.a11y-contrast-dark .category-container,
 html.a11y-contrast-dark .confirm-card {
   background-color: #111827 !important;
@@ -1773,21 +1773,102 @@ html.a11y-contrast-dark .text-muted,
 html.a11y-contrast-dark .text-secondary,
 html.a11y-contrast-dark .category-card-subtitle,
 html.a11y-contrast-dark .confirm-candidate-num,
-html.a11y-contrast-dark .candidate-seq-text {
+html.a11y-contrast-dark .candidate-seq-text,
+html.a11y-contrast-dark .ballot-subtitle {
   color: #94a3b8 !important;
 }
 
 html.a11y-contrast-dark .text-dark,
 html.a11y-contrast-dark .voter-display-name,
 html.a11y-contrast-dark .ballot-main-title,
+html.a11y-contrast-dark .ballot-subtitle strong,
 html.a11y-contrast-dark .category-card-title,
 html.a11y-contrast-dark .candidate-card-name,
 html.a11y-contrast-dark .confirm-candidate-name,
 html.a11y-contrast-dark .stepper-title,
-html.a11y-contrast-dark .modal-title {
+html.a11y-contrast-dark .modal-title,
+html.a11y-contrast-dark #statusSummaryKetua,
+html.a11y-contrast-dark #statusSummaryPengawas {
   color: #ffffff !important;
 }
 
+/* Stepper in Dark Mode */
+html.a11y-contrast-dark .ballot-stepper {
+  background-color: #111827 !important;
+  border: 1px solid #374151 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+html.a11y-contrast-dark .stepper-item {
+  color: #94a3b8 !important;
+}
+html.a11y-contrast-dark .stepper-item:hover:not(.active) {
+  background-color: #1e293b !important;
+}
+html.a11y-contrast-dark .stepper-item.active {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+html.a11y-contrast-dark .stepper-circle {
+  background-color: #1e293b !important;
+  border: 2px solid #475569 !important;
+  color: #94a3b8 !important;
+}
+html.a11y-contrast-dark .stepper-item[data-step="1"].active .stepper-circle {
+  background-color: #059669 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25) !important;
+}
+html.a11y-contrast-dark .stepper-item[data-step="2"].active .stepper-circle {
+  background-color: #2563eb !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25) !important;
+}
+html.a11y-contrast-dark .stepper-item[data-step="3"].active .stepper-circle {
+  background-color: #334155 !important;
+  border-color: #64748b !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.25) !important;
+}
+html.a11y-contrast-dark .stepper-item.completed .stepper-circle {
+  background-color: #064e3b !important;
+  border-color: #059669 !important;
+  color: #34d399 !important;
+}
+html.a11y-contrast-dark .stepper-item.completed .stepper-title {
+  color: #e2e8f0 !important;
+}
+html.a11y-contrast-dark .stepper-line {
+  background-color: #374151 !important;
+}
+html.a11y-contrast-dark .stepper-line.completed {
+  background-color: #059669 !important;
+}
+html.a11y-contrast-dark .stepper-label {
+  color: #94a3b8 !important;
+}
+html.a11y-contrast-dark .stepper-title {
+  color: #cbd5e1 !important;
+}
+html.a11y-contrast-dark .stepper-item.active .stepper-title {
+  color: #ffffff !important;
+}
+
+/* Candidate Card Elements in Dark Mode */
+html.a11y-contrast-dark .candidate-seq-text {
+  background-color: #1e293b !important;
+  border: 1px solid #374151 !important;
+  color: #94a3b8 !important;
+}
+html.a11y-contrast-dark .candidate-avatar-wrap {
+  background-color: #1e293b !important;
+  border-color: #374151 !important;
+}
+html.a11y-contrast-dark .candidate-avatar-wrap:hover {
+  border-color: #38bdf8 !important;
+}
 html.a11y-contrast-dark .candidate-quote-preview,
 html.a11y-contrast-dark .confirm-vision-styled {
   background-color: #1e293b !important;
@@ -1795,34 +1876,244 @@ html.a11y-contrast-dark .confirm-vision-styled {
   color: #cbd5e1 !important;
 }
 
+/* Candidate Card Buttons in Dark Mode */
+html.a11y-contrast-dark .btn-card-vision {
+  background-color: #1e293b !important;
+  border: 1.5px solid #374151 !important;
+  color: #cbd5e1 !important;
+}
+html.a11y-contrast-dark .btn-card-vision:hover {
+  background-color: #334155 !important;
+  border-color: #4b5563 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .candidate-card[data-category="ketua"] .btn-card-vision {
+  color: #34d399 !important;
+  border-color: #065f46 !important;
+}
+html.a11y-contrast-dark .candidate-card[data-category="pengawas"] .btn-card-vision {
+  color: #60a5fa !important;
+  border-color: #1e3a8a !important;
+}
+html.a11y-contrast-dark .btn-card-action {
+  background-color: #1e293b !important;
+  border: 1.5px solid #374151 !important;
+  color: #f1f5f9 !important;
+}
+html.a11y-contrast-dark .candidate-card[data-category="ketua"] .btn-card-action {
+  border-color: #059669 !important;
+  color: #6ee7b7 !important;
+}
+html.a11y-contrast-dark .candidate-card[data-category="ketua"]:hover .btn-card-action {
+  background-color: #064e3b !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .candidate-card[data-category="pengawas"] .btn-card-action {
+  border-color: #2563eb !important;
+  color: #93c5fd !important;
+}
+html.a11y-contrast-dark .candidate-card[data-category="pengawas"]:hover .btn-card-action {
+  background-color: #1e3a8a !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .candidate-card.is-selected-ketua .btn-card-action {
+  background-color: #059669 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .candidate-card.is-selected-pengawas .btn-card-action {
+  background-color: #2563eb !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Category & Header in Dark Mode */
+html.a11y-contrast-dark .voter-avatar-initials {
+  background-color: #064e3b !important;
+  color: #6ee7b7 !important;
+  border: 1.5px solid #059669 !important;
+}
+html.a11y-contrast-dark .btn-cancel-exit {
+  background-color: #1e293b !important;
+  border: 1.5px solid #475569 !important;
+  color: #f1f5f9 !important;
+}
+html.a11y-contrast-dark .btn-cancel-exit:hover {
+  background-color: #dc2626 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .category-icon-ketua {
+  background-color: #064e3b !important;
+  border: 1px solid #059669 !important;
+  color: #6ee7b7 !important;
+}
+html.a11y-contrast-dark .category-icon-pengawas {
+  background-color: #1e3a8a !important;
+  border: 1px solid #2563eb !important;
+  color: #93c5fd !important;
+}
+html.a11y-contrast-dark .category-icon-review {
+  background-color: #1e293b !important;
+  border: 1px solid #374151 !important;
+  color: #f1f5f9 !important;
+}
+html.a11y-contrast-dark .quota-ketua {
+  background-color: #064e3b !important;
+  color: #a7f3d0 !important;
+  border: 1px solid #059669 !important;
+}
+html.a11y-contrast-dark .quota-pengawas {
+  background-color: #1e3a8a !important;
+  color: #bfdbfe !important;
+  border: 1px solid #2563eb !important;
+}
+html.a11y-contrast-dark .btn-slider-nav {
+  background-color: #1e293b !important;
+  border: 1.5px solid #374151 !important;
+  color: #cbd5e1 !important;
+}
+html.a11y-contrast-dark .btn-slider-nav:hover:not(:disabled) {
+  background-color: #334155 !important;
+  border-color: #4b5563 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .btn-slider-nav:disabled {
+  background-color: #111827 !important;
+  border-color: #1f2937 !important;
+  color: #475569 !important;
+}
+html.a11y-contrast-dark .category-container .border-top {
+  border-color: #374151 !important;
+}
+
+/* Sticky Footer in Dark Mode */
 html.a11y-contrast-dark #stickySelectionSummary,
 html.a11y-contrast-dark .sticky-status-label {
   color: #e2e8f0 !important;
 }
-
 html.a11y-contrast-dark #stickySelectionSummary .text-muted {
   color: #94a3b8 !important;
 }
+html.a11y-contrast-dark .sticky-status-circle {
+  background: #1e293b !important;
+  border: 1px solid #374151 !important;
+  color: #94a3b8 !important;
+}
+html.a11y-contrast-dark .sticky-status-circle.is-complete {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+  color: #34d399 !important;
+}
+html.a11y-contrast-dark .badge-completeness.badge-incomplete {
+  background-color: #1e293b !important;
+  border: 1px solid #374151 !important;
+  color: #cbd5e1 !important;
+}
+html.a11y-contrast-dark .badge-completeness.badge-complete {
+  background-color: #064e3b !important;
+  border: 1px solid #059669 !important;
+  color: #6ee7b7 !important;
+}
+html.a11y-contrast-dark .btn-wizard-next:disabled,
+html.a11y-contrast-dark .btn-submit-ballot:disabled {
+  background-color: #1e293b !important;
+  border: 1.5px solid #334155 !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
 
+/* Step 3 Review Elements in Dark Mode */
+html.a11y-contrast-dark .confirm-trust-strip {
+  background-color: #111827 !important;
+  border: 1px solid #374151 !important;
+  color: #cbd5e1 !important;
+}
+html.a11y-contrast-dark .confirm-trust-strip strong {
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .confirm-card-header {
+  background-color: #1e293b !important;
+  border-bottom: 1px solid #374151 !important;
+}
+html.a11y-contrast-dark .confirm-card-header .badge.bg-success {
+  background-color: #064e3b !important;
+  color: #a7f3d0 !important;
+  border: 1px solid #059669 !important;
+}
+html.a11y-contrast-dark .confirm-card-header .badge.bg-primary {
+  background-color: #1e3a8a !important;
+  color: #bfdbfe !important;
+  border: 1px solid #2563eb !important;
+}
+html.a11y-contrast-dark .confirm-badge-ketua {
+  color: #34d399 !important;
+}
+html.a11y-contrast-dark .confirm-badge-pengawas {
+  color: #60a5fa !important;
+}
+html.a11y-contrast-dark .confirm-card .badge.bg-light {
+  background-color: #1e293b !important;
+  border: 1px solid #374151 !important;
+}
+html.a11y-contrast-dark .confirm-card-ketua .badge.bg-light {
+  color: #34d399 !important;
+  border-color: #059669 !important;
+}
+html.a11y-contrast-dark .confirm-card-pengawas .badge.bg-light {
+  color: #60a5fa !important;
+  border-color: #2563eb !important;
+}
+
+/* SweetAlert in Dark Mode */
+html.a11y-contrast-dark .swal2-popup {
+  background-color: #111827 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #374151 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+}
+html.a11y-contrast-dark .swal2-title,
+html.a11y-contrast-dark .swal2-html-container {
+  color: #f1f5f9 !important;
+}
+html.a11y-contrast-dark .swal2-confirm {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+html.a11y-contrast-dark .swal2-cancel {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+}
+
+/* A11y Controls & Modals in Dark Mode */
 html.a11y-contrast-dark .a11y-contrast-card {
   background-color: #1e293b !important;
   border-color: #374151 !important;
   color: #f1f5f9 !important;
 }
-
 html.a11y-contrast-dark .a11y-contrast-card.active {
   border-color: #10b981 !important;
   background-color: rgba(16, 185, 129, 0.15) !important;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
 }
-
 html.a11y-contrast-dark .a11y-switch-row,
 html.a11y-contrast-dark .a11y-preview-box {
   background-color: #1e293b !important;
   border-color: #374151 !important;
   color: #f8fafc !important;
 }
-
+html.a11y-contrast-dark .a11y-fab-btn {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+  color: #6ee7b7 !important;
+}
+html.a11y-contrast-dark .a11y-fab-btn:hover {
+  background: #047857 !important;
+  color: #ffffff !important;
+}
 html.a11y-contrast-dark .btn-close {
   background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
   border: 1px solid #4b5563 !important;
@@ -1831,24 +2122,20 @@ html.a11y-contrast-dark .btn-close {
   filter: none !important;
   padding: 0.5rem !important;
 }
-
 html.a11y-contrast-dark .bg-light {
   background-color: #1e293b !important;
   border-color: #334155 !important;
   color: #f8fafc !important;
 }
-
 html.a11y-contrast-dark .candidate-card:hover {
   border-color: #38bdf8 !important;
   background-color: #1e293b !important;
 }
-
 html.a11y-contrast-dark .candidate-card.is-selected-ketua {
   background-color: #064e3b !important;
   border-color: #34d399 !important;
   box-shadow: 0 0 0 3px #10b981 !important;
 }
-
 html.a11y-contrast-dark .candidate-card.is-selected-pengawas {
   background-color: #1e3a8a !important;
   border-color: #60a5fa !important;
@@ -1924,7 +2211,6 @@ html.a11y-contrast-dark .photo-preview-frame {
   border-color: #374151 !important;
   background-color: #1f2937 !important;
 }
-
 html.a11y-contrast-dark #modalPhotoCandName {
   color: #ffffff !important;
 }
@@ -1956,7 +2242,7 @@ html.a11y-contrast-yellow .ballot-sticky-footer,
 html.a11y-contrast-yellow .modal-content,
 html.a11y-contrast-yellow .review-card,
 html.a11y-contrast-yellow .candidate-card,
-html.a11y-contrast-yellow .ballot-stepper-wrapper,
+html.a11y-contrast-yellow .ballot-stepper,
 html.a11y-contrast-yellow .category-container,
 html.a11y-contrast-yellow .confirm-card,
 html.a11y-contrast-yellow .bg-light,
@@ -1977,6 +2263,95 @@ html.a11y-contrast-yellow .a11y-switch-row {
   border: 2px solid #facc15 !important;
   color: #facc15 !important;
   box-shadow: none !important;
+}
+
+/* Stepper in Yellow on Black (WCAG AAA) */
+html.a11y-contrast-yellow .ballot-stepper {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  box-shadow: none !important;
+}
+html.a11y-contrast-yellow .stepper-item {
+  background-color: #000000 !important;
+  border: 1px solid transparent !important;
+}
+html.a11y-contrast-yellow .stepper-item:hover:not(.active) {
+  background-color: #1a1a00 !important;
+}
+html.a11y-contrast-yellow .stepper-item.active {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.2) !important;
+}
+html.a11y-contrast-yellow .stepper-circle {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .stepper-item.active .stepper-circle,
+html.a11y-contrast-yellow .stepper-item.completed .stepper-circle {
+  background-color: #facc15 !important;
+  border-color: #facc15 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+html.a11y-contrast-yellow .stepper-line {
+  background-color: #554400 !important;
+  height: 2px !important;
+}
+html.a11y-contrast-yellow .stepper-line.completed {
+  background-color: #facc15 !important;
+}
+html.a11y-contrast-yellow .stepper-label,
+html.a11y-contrast-yellow .stepper-title,
+html.a11y-contrast-yellow .stepper-item.active .stepper-title,
+html.a11y-contrast-yellow .stepper-item.completed .stepper-title {
+  color: #facc15 !important;
+}
+
+/* Candidate Numbering, Sequence & Category Icons in Yellow Mode */
+html.a11y-contrast-yellow .candidate-num-box,
+html.a11y-contrast-yellow .num-ketua,
+html.a11y-contrast-yellow .num-pengawas {
+  background-color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+html.a11y-contrast-yellow .candidate-seq-text {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .category-icon-box,
+html.a11y-contrast-yellow .category-icon-ketua,
+html.a11y-contrast-yellow .category-icon-pengawas,
+html.a11y-contrast-yellow .category-icon-review {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .category-container .border-top {
+  border-color: #554400 !important;
+}
+html.a11y-contrast-yellow .quota-ketua,
+html.a11y-contrast-yellow .quota-pengawas {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+
+/* Voter Profile & Header in Yellow Mode */
+html.a11y-contrast-yellow .voter-avatar-initials {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+  font-weight: 900 !important;
+}
+html.a11y-contrast-yellow .badge-voter-verified {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
 }
 
 /* Candidate Detail Modal in Yellow on Black (WCAG AAA) */
@@ -2070,6 +2445,7 @@ html.a11y-contrast-yellow #btnSelectFromPhotoModal {
   font-weight: 800 !important;
 }
 
+/* Typography in Yellow on Black */
 html.a11y-contrast-yellow h1,
 html.a11y-contrast-yellow h2,
 html.a11y-contrast-yellow h3,
@@ -2094,19 +2470,16 @@ html.a11y-contrast-yellow .category-card-subtitle,
 html.a11y-contrast-yellow .candidate-card-name,
 html.a11y-contrast-yellow .confirm-candidate-name,
 html.a11y-contrast-yellow .confirm-candidate-num,
-html.a11y-contrast-yellow .candidate-seq-text,
-html.a11y-contrast-yellow .candidate-num-box,
 html.a11y-contrast-yellow .confirm-vision-content,
 html.a11y-contrast-yellow .voter-display-name,
 html.a11y-contrast-yellow .ballot-main-title,
+html.a11y-contrast-yellow .ballot-subtitle,
 html.a11y-contrast-yellow .modal-title,
 html.a11y-contrast-yellow .sticky-summary-text,
-html.a11y-contrast-yellow .sticky-status-label {
+html.a11y-contrast-yellow .sticky-status-label,
+html.a11y-contrast-yellow #statusSummaryKetua,
+html.a11y-contrast-yellow #statusSummaryPengawas {
   color: #facc15 !important;
-}
-
-html.a11y-contrast-yellow .btn-close {
-  filter: invert(80%) sepia(100%) saturate(1000%) hue-rotate(10deg);
 }
 
 html.a11y-contrast-yellow .btn,
@@ -2116,7 +2489,7 @@ html.a11y-contrast-yellow .btn-wizard-back,
 html.a11y-contrast-yellow .btn-submit-ballot,
 html.a11y-contrast-yellow .btn-detail-trigger,
 html.a11y-contrast-yellow .btn-card-vision,
-html.a11y-contrast-yellow .btn-card-select,
+html.a11y-contrast-yellow .btn-card-action,
 html.a11y-contrast-yellow .btn-change-choice,
 html.a11y-contrast-yellow .btn-slider-nav,
 html.a11y-contrast-yellow .btn-cancel-exit {
@@ -2127,20 +2500,66 @@ html.a11y-contrast-yellow .btn-cancel-exit {
 
 html.a11y-contrast-yellow .btn:hover,
 html.a11y-contrast-yellow button:hover,
-html.a11y-contrast-yellow .btn-wizard-next:hover,
-html.a11y-contrast-yellow .btn-submit-ballot:hover,
+html.a11y-contrast-yellow .btn-cancel-exit:hover,
+html.a11y-contrast-yellow .btn-slider-nav:hover:not(:disabled),
+html.a11y-contrast-yellow .btn-card-vision:hover,
+html.a11y-contrast-yellow .btn-card-action:hover {
+  background-color: #facc15 !important;
+  border-color: #facc15 !important;
+  color: #000000 !important;
+}
+
+html.a11y-contrast-yellow .candidate-card[data-category="ketua"] .btn-card-vision,
+html.a11y-contrast-yellow .candidate-card[data-category="pengawas"] .btn-card-vision,
+html.a11y-contrast-yellow .candidate-card[data-category="ketua"] .btn-card-action,
+html.a11y-contrast-yellow .candidate-card[data-category="pengawas"] .btn-card-action {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+
+html.a11y-contrast-yellow .candidate-card[data-category="ketua"]:hover .btn-card-action,
+html.a11y-contrast-yellow .candidate-card[data-category="pengawas"]:hover .btn-card-action {
+  background-color: #facc15 !important;
+  border-color: #facc15 !important;
+  color: #000000 !important;
+}
+
+/* Candidate Card Selected State in Yellow Mode */
 html.a11y-contrast-yellow .candidate-card.is-selected-ketua,
 html.a11y-contrast-yellow .candidate-card.is-selected-pengawas {
+  background-color: #000000 !important;
+  border: 3px solid #facc15 !important;
+  box-shadow: 0 0 0 2px #facc15, 0 0 25px rgba(250, 204, 21, 0.4) !important;
+}
+html.a11y-contrast-yellow .candidate-card.is-selected-ketua .btn-card-action,
+html.a11y-contrast-yellow .candidate-card.is-selected-pengawas .btn-card-action {
+  background-color: #facc15 !important;
+  border-color: #facc15 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+html.a11y-contrast-yellow .candidate-card.is-selected-ketua .btn-card-action *,
+html.a11y-contrast-yellow .candidate-card.is-selected-pengawas .btn-card-action * {
+  color: #000000 !important;
+}
+html.a11y-contrast-yellow .candidate-floating-terpilih.floating-ketua,
+html.a11y-contrast-yellow .candidate-floating-terpilih.floating-pengawas {
   background-color: #facc15 !important;
   color: #000000 !important;
+  border: 2px solid #000000 !important;
+  font-weight: 900 !important;
+}
+
+html.a11y-contrast-yellow .candidate-avatar-wrap {
   border: 2px solid #facc15 !important;
+  background-color: #000000 !important;
 }
-
-html.a11y-contrast-yellow .candidate-card.is-selected-ketua *,
-html.a11y-contrast-yellow .candidate-card.is-selected-pengawas * {
-  color: #000000 !important;
+html.a11y-contrast-yellow .candidate-avatar-wrap .avatar-zoom-icon {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
 }
-
 html.a11y-contrast-yellow .candidate-avatar-img,
 html.a11y-contrast-yellow .candidate-photo,
 html.a11y-contrast-yellow .confirm-avatar-img {
@@ -2148,18 +2567,132 @@ html.a11y-contrast-yellow .confirm-avatar-img {
   filter: contrast(125%) brightness(105%);
 }
 
-html.a11y-contrast-yellow .stepper-circle,
+/* Sticky Footer Circle & Completeness Badges in Yellow Mode */
 html.a11y-contrast-yellow .sticky-status-circle {
   background: #000000 !important;
   border: 2px solid #facc15 !important;
   color: #facc15 !important;
 }
-
-html.a11y-contrast-yellow .stepper-item.active .stepper-circle,
-html.a11y-contrast-yellow .stepper-item.completed .stepper-circle,
 html.a11y-contrast-yellow .sticky-status-circle.is-complete {
   background: #facc15 !important;
   color: #000000 !important;
+}
+html.a11y-contrast-yellow .badge-completeness,
+html.a11y-contrast-yellow .badge-incomplete {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .badge-complete {
+  background-color: #facc15 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #000000 !important;
+}
+
+/* Wizard Next & Submit Buttons in Yellow Mode */
+html.a11y-contrast-yellow .btn-wizard-next:disabled,
+html.a11y-contrast-yellow .btn-submit-ballot:disabled {
+  background-color: #000000 !important;
+  border: 2px solid #854d0e !important;
+  color: #a16207 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  box-shadow: none !important;
+}
+html.a11y-contrast-yellow .btn-wizard-next:not(:disabled),
+html.a11y-contrast-yellow .btn-submit-ballot:not(:disabled) {
+  background-color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+html.a11y-contrast-yellow .btn-wizard-next:hover:not(:disabled),
+html.a11y-contrast-yellow .btn-submit-ballot:hover:not(:disabled) {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Step 3 Confirmation & Review Cards in Yellow Mode */
+html.a11y-contrast-yellow .confirm-card {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-card-header {
+  background-color: #000000 !important;
+  border-bottom: 2px solid #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-badge-header,
+html.a11y-contrast-yellow .confirm-badge-ketua,
+html.a11y-contrast-yellow .confirm-badge-pengawas {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-card-header .badge {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-avatar-box {
+  border-color: #facc15 !important;
+}
+html.a11y-contrast-yellow .badge-status-picked {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .badge-status-picked i {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-vision-styled {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-vision-label {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-vision-label i {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-trust-strip {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-trust-strip * {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .confirm-card .badge.bg-light {
+  background-color: #000000 !important;
+  border: 1.5px solid #facc15 !important;
+  color: #facc15 !important;
+}
+
+/* SweetAlert in Yellow on Black (WCAG AAA) */
+html.a11y-contrast-yellow .swal2-popup {
+  background-color: #000000 !important;
+  color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+  box-shadow: none !important;
+}
+html.a11y-contrast-yellow .swal2-title,
+html.a11y-contrast-yellow .swal2-html-container {
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .swal2-confirm,
+html.a11y-contrast-yellow .swal2-cancel {
+  background-color: #000000 !important;
+  border: 2px solid #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .swal2-confirm:hover,
+html.a11y-contrast-yellow .swal2-cancel:hover {
+  background-color: #facc15 !important;
+  color: #000000 !important;
+}
+html.a11y-contrast-yellow .swal2-icon.swal2-warning {
+  border-color: #facc15 !important;
+  color: #facc15 !important;
 }
 
 /* --- 4. Monochrome Mode (Grayscale) --- */
