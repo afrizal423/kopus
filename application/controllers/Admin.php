@@ -426,10 +426,16 @@ class Admin extends CI_Controller {
     public function report_turnout() {
         $this->require_auth();
         $search = trim((string)$this->input->get('q', TRUE));
+        $active_tab = trim((string)$this->input->get('tab', TRUE));
+        if (!in_array($active_tab, array('unvoted', 'voted'))) {
+            $active_tab = 'unvoted';
+        }
 
         $data['stats'] = $this->Admin_model->get_turnout_stats();
         $data['unvoted_voters'] = $this->Admin_model->get_unvoted_voters($search);
+        $data['voted_voters'] = $this->Admin_model->get_voted_voters($search);
         $data['search'] = $search;
+        $data['active_tab'] = $active_tab;
         $data['settings'] = $this->Admin_model->get_settings();
         $data['current_page'] = 'report_turnout';
 
