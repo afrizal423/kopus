@@ -3665,6 +3665,145 @@ html.a11y-contrast-yellow .kiosk-dot-item.active {
   background: #facc15 !important;
 }
 
+/* ==========================================================================
+   KIOSK SPA MULTI-STAGE VOTING SYSTEM (SCANNER -> BALLOT -> SUCCESS)
+   ========================================================================== */
+.kiosk-spa-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+.spa-stage {
+  display: none;
+  width: 100%;
+}
+
+.spa-stage.active {
+  display: block;
+  animation: spaStageFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes spaStageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stage Success 3D Ballot Card */
+.receipt-card-3d {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+  padding: 2rem 2.25rem;
+  max-width: 560px;
+  margin: 2rem auto;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ballot-3d-stage {
+  width: 100%;
+  height: 250px;
+  border-radius: 16px;
+  position: relative;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f9 65%, #e2e8f0 100%);
+  border: 1px solid #cbd5e1;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.04);
+  cursor: grab;
+}
+
+.ballot-3d-stage:active {
+  cursor: grabbing;
+}
+
+.ballot-status-pill {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.ballot-hint {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  pointer-events: none;
+  user-select: none;
+}
+
+.countdown-progress {
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 1rem 0 1.25rem;
+}
+
+.countdown-progress-bar {
+  height: 100%;
+  background-color: #059669;
+  width: 100%;
+  transition: width 1s linear;
+}
+
+/* Accessibility Modes for Success Stage */
+html.a11y-contrast-dark .receipt-card-3d {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+html.a11y-contrast-dark .ballot-3d-stage {
+  background: radial-gradient(circle at 50% 35%, #1e293b 0%, #0f172a 100%) !important;
+  border-color: #334155 !important;
+}
+html.a11y-contrast-yellow .receipt-card-3d {
+  background: #000000 !important;
+  border-color: #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .ballot-3d-stage {
+  background: #000000 !important;
+  border-color: #facc15 !important;
+}
+html.a11y-contrast-yellow .ballot-status-pill {
+  background: #000000 !important;
+  border-color: #facc15 !important;
+  color: #facc15 !important;
+}
+html.a11y-contrast-yellow .countdown-progress {
+  background-color: #333333 !important;
+}
+html.a11y-contrast-yellow .countdown-progress-bar {
+  background-color: #facc15 !important;
+}
+
+
 
 
 

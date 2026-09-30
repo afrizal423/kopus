@@ -22,6 +22,36 @@ class Voting extends CI_Controller {
         $data['ketua_candidates'] = $this->Voting_model->get_candidates('ketua');
         $data['pengawas_candidates'] = $this->Voting_model->get_candidates('pengawas');
         $data['all_candidates'] = array_merge($data['ketua_candidates'], $data['pengawas_candidates']);
+        
+        $total_timeout = (int)($data['settings']['booth_timeout_seconds'] ?? 120);
+        if ($total_timeout <= 0) $total_timeout = 120;
+
+        $voter_id = $this->session->userdata('voter_id');
+        $remaining_timeout = $total_timeout;
+
+        if ($voter_id) {
+            $entry_time = (int)$this->session->userdata('booth_entry_time');
+            $elapsed = ($entry_time > 0) ? (time() - $entry_time) : 0;
+            $remaining_timeout = $total_timeout - $elapsed;
+
+            if ($remaining_timeout <= 0) {
+                // Sesi bilik suara telah habis saat di-refresh
+                $this->session->unset_userdata('voter_id');
+                $this->session->unset_userdata('voter_name');
+                $this->session->unset_userdata('member_number');
+                $this->session->unset_userdata('booth_entry_time');
+                $this->session->sess_destroy();
+                $voter_id = null;
+                $remaining_timeout = $total_timeout;
+            }
+        }
+
+        $data['voter_id'] = $voter_id;
+        $data['voter_name'] = $voter_id ? ($this->session->userdata('voter_name') ?? '') : '';
+        $data['member_number'] = $voter_id ? ($this->session->userdata('member_number') ?? '') : '';
+        $data['timeout_seconds'] = $remaining_timeout;
+        $data['election_title'] = !empty($data['settings']['election_title']) ? $data['settings']['election_title'] : 'Pemilihan Pengurus & Pengawas Koperasi';
+
         $this->load->view('voting/scanner', $data);
     }
 
@@ -112,6 +142,14 @@ class Voting extends CI_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode(array(
                 'status' => 'success', 
+                'voter' => array(
+                    'id' => (int)$voter['id'],
+                    'name' => $voter['name'],
+                    'member_number' => $voter['member_number']
+                ),
+                'timeout_seconds' => (int)($settings['booth_timeout_seconds'] ?? 60),
+                'csrf_token_name' => $this->security->get_csrf_token_name(),
+                'csrf_hash' => $this->security->get_csrf_hash(),
                 'redirect' => base_url('voting/ballot')
             )));
     }
@@ -211,6 +249,8 @@ class Voting extends CI_Controller {
                 ->set_output(json_encode(array(
                     'status' => 'success',
                     'receipt_token' => $receipt_token,
+                    'csrf_token_name' => $this->security->get_csrf_token_name(),
+                    'csrf_hash' => $this->security->get_csrf_hash(),
                     'redirect' => base_url('voting/success?receipt=' . urlencode($receipt_token))
                 )));
         }
@@ -225,7 +265,20 @@ class Voting extends CI_Controller {
     }
 
     public function cancel() {
+        $this->session->unset_userdata('voter_id');
+        $this->session->unset_userdata('voter_name');
+        $this->session->unset_userdata('member_number');
+        $this->session->unset_userdata('booth_entry_time');
         $this->session->sess_destroy();
+        if ($this->input->is_ajax_request() || $this->input->get('ajax') || $this->input->post('ajax')) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(array(
+                    'status' => 'success',
+                    'csrf_token_name' => $this->security->get_csrf_token_name(),
+                    'csrf_hash' => $this->security->get_csrf_hash()
+                )));
+        }
         redirect('voting');
     }
 
@@ -266,7 +319,7 @@ class Voting extends CI_Controller {
             'booth_entry_time' => time()
         ));
 
-        redirect('voting/ballot');
+        redirect('voting?dev=1');
     }
 
     public function success() {
