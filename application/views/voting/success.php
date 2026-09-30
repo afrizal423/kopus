@@ -120,7 +120,7 @@
             </div>
 
             <p class="text-muted small mb-3">
-                Bilik suara akan kembali ke layar awal dalam <strong id="countdown" class="text-dark">8</strong> detik...
+                Bilik suara akan kembali ke layar awal dalam <strong id="countdown" class="text-dark">3</strong> detik...
             </p>
 
             <a href="<?= base_url('voting'); ?>" class="btn btn-kop-primary w-100 py-2 fw-semibold" id="btnFinish">
@@ -499,9 +499,9 @@
         initScene();
     })();
 
-    // 8-second countdown with visual progress bar
+    // 3-second countdown with visual progress bar
     (function() {
-        let totalTime = 8;
+        let totalTime = 3;
         let timeLeft = totalTime;
         const countEl = document.getElementById('countdown');
         const progressBar = document.getElementById('progressBar');
